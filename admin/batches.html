@@ -1,0 +1,26 @@
+﻿<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Batches | CCD Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/styles.css"></head>
+<body data-base="../" data-require-auth="true" data-require-admin="true"><div data-mount="header"></div>
+<main id="main" class="app-shell"><div class="app-layout"><nav class="sidebar" aria-label="Admin"><h5>Admin</h5><a href="index.html">Overview</a><a href="members.html">Members</a><a href="batches.html">Batches</a><a href="leadership.html">Leadership</a><a href="teams.html">Teams</a><a href="tasks.html">Tasks</a><a href="projects.html">Projects</a><a href="tech-cohort.html">Tech Cohort</a><a href="rewards.html">Rewards</a><a href="../dashboard/index.html">Member view</a><a href="#" data-signout>Sign out</a></nav>
+<div class="app-main"><div class="app-header"><div><span class="chip chip-accent">Admin</span><h1>Batch management</h1><p class="muted">Create batches, control registration, set dates, and manage lifecycle. WhatsApp invite URLs should be set in Supabase by admins and retrieved only through secure flows/Edge Functions.</p></div></div>
+<div class="grid-2" style="align-items:start">
+<form class="form-card" data-batch-form style="max-width:none;margin:0"><h3>Create/update batch</h3><div class="notice" data-notice></div>
+<div class="form-grid">
+<div class="field"><label>Name</label><input name="name" required placeholder="Batch A"></div>
+<div class="field"><label>Year</label><input name="year" type="number" required value="2027"></div>
+<div class="field"><label>Status</label><select name="status"><option value="upcoming">Upcoming</option><option value="registration_open">Registration Open</option><option value="registration_closed">Registration Closed</option><option value="active">Active</option><option value="closing_soon">Closing Soon</option><option value="completed">Completed</option><option value="archived">Archived</option></select></div>
+<div class="field"><label><input type="checkbox" name="is_registration_open" style="width:auto;min-height:auto;margin-right:8px">Registration open</label></div>
+<div class="field"><label>Registration opens</label><input name="registration_open_date" type="date"></div>
+<div class="field"><label>Registration closes</label><input name="registration_close_date" type="date"></div>
+<div class="field"><label>Start date</label><input name="start_date" type="date"></div>
+<div class="field"><label>End date</label><input name="end_date" type="date"></div>
+<div class="field full"><label>Description</label><textarea name="description"></textarea></div>
+</div><button class="btn btn-primary" type="submit">Save batch</button></form>
+<div class="table-card"><div class="table-wrap"><table id="batchesTable"><thead><tr><th>Name</th><th>Year</th><th>Status</th><th>Opens</th><th>Closes</th><th>Action</th></tr></thead><tbody><tr><td colspan="6" class="muted">Loading...</td></tr></tbody></table></div></div>
+</div>
+</div></div></main><div data-mount="footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../assets/js/config.js"></script><script src="../assets/js/supabase-client.js"></script><script src="../assets/js/guard.js"></script><script src="../assets/js/admin.js"></script><script src="../assets/js/app.js"></script>
+</body></html>

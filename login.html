@@ -1,0 +1,49 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log In | CCD Developer Community Dashboard</title>
+  <meta name="description" content="Log in to your Community of Courssin Developers (CCD) account to access your developer dashboard, coding batch, teams, projects, and community activities.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body data-base="">
+  <div data-mount="header"></div>
+  <main id="main">
+    <section class="auth-shell">
+      <div class="container">
+        <div class="auth-card reveal">
+          <div class="auth-header">
+            <span class="chip chip-accent">Account</span>
+            <h1>Welcome Back to CCD</h1>
+            <p>Log in to your developer dashboard to connect with your batch, join team projects, track activities, and keep building with the CCD community.</p>
+          </div>
+          <form data-auth="login" novalidate>
+            <div class="notice" data-notice aria-live="polite"></div>
+            <button class="btn btn-google" type="button" data-google data-label="Continue with Google"></button>
+            <div class="auth-divider">or</div>
+            <div class="field">
+              <label for="email">Email address</label>
+              <input id="email" name="email" type="email" autocomplete="email" required placeholder="you@example.com">
+            </div>
+            <div class="field">
+              <label for="password">Password</label>
+              <input id="password" name="password" type="password" autocomplete="current-password" required placeholder="Enter your password">
+            </div>
+            <div class="auth-links"><a href="contact.html">Need help?</a></div>
+            <button class="btn btn-primary btn-block" type="submit">Log in</button>
+          </form>
+          <div class="auth-footer">New to CCD? <a href="register.html">Create an account</a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div data-mount="footer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/supabase-client.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

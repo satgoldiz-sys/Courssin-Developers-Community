@@ -1,0 +1,31 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact CCD | Developer Community Partnerships, Membership & Events</title>
+  <meta name="description" content="Contact Community of Courssin Developers (CCD) about developer membership, coding batches, tech events, partnerships, and community programs. We’re here to help.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body data-base="">
+  <div data-mount="header"></div>
+  <main id="main">
+    <section class="page-hero"><div class="container reveal"><span class="chip chip-accent">Contact</span><h1>Get in Touch with the CCD Developer Community</h1><p>Have questions about joining a coding batch, developer membership, tech events, partnerships, or community programs? Send us a message and the Community of Courssin Developers team will be happy to help.</p></div></section>
+    <section class="section"><div class="container">
+      <form class="form-card reveal" action="#" method="post" onsubmit="event.preventDefault(); this.querySelector('[data-status]').textContent='Phase 1 UI only: connect this form to a secure Supabase Edge Function in a later phase.';">
+        <div class="notice" data-status>Thanks for reaching out! This contact form is currently in preview mode. Secure message delivery will be connected through CCD’s backend services in an upcoming update.</div></div>
+        <div class="form-grid">
+          <div class="field"><label for="name">Full name</label><input id="name" name="name" autocomplete="name" required></div>
+          <div class="field"><label for="email">Email address</label><input id="email" name="email" type="email" autocomplete="email" required></div>
+          <div class="field full"><label for="subject">Subject</label><input id="subject" name="subject" required></div>
+          <div class="field full"><label for="message">Message</label><textarea id="message" name="message" required></textarea></div>
+        </div>
+        <button class="btn btn-primary" type="submit">Send Message</button>
+      </form>
+    </div></section>
+  </main>
+  <div data-mount="footer"></div>
+  <script src="assets/js/config.js"></script><script src="assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Community of Courssin Developers</title>
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#063B2A"/>
+      <stop offset="1" stop-color="#008F5A"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#g)"/>
+  <rect x="24" y="24" width="464" height="464" rx="78" fill="none" stroke="#FFD21F" stroke-opacity="0.45" stroke-width="8"/>
+  <path d="M156 160h84v48h-36v96h36v48h-84zM272 160h84v192h-48V208h-36z" fill="#FFD21F"/>
+  <circle cx="256" cy="256" r="176" fill="none" stroke="#FFFFFF" stroke-opacity="0.12" stroke-width="8"/>
+</svg>

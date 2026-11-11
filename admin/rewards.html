@@ -1,0 +1,13 @@
+﻿<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Rewards | CCD Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/styles.css"></head>
+<body data-base="../" data-require-auth="true" data-require-admin="true"><div data-mount="header"></div>
+<main id="main" class="app-shell"><div class="app-layout"><nav class="sidebar" aria-label="Admin"><h5>Admin</h5><a href="index.html">Overview</a><a href="members.html">Members</a><a href="batches.html">Batches</a><a href="leadership.html">Leadership</a><a href="teams.html">Teams</a><a href="tasks.html">Tasks</a><a href="projects.html">Projects</a><a href="tech-cohort.html">Tech Cohort</a><a href="rewards.html">Rewards</a><a href="../dashboard/index.html">Member view</a><a href="#" data-signout>Sign out</a></nav>
+<div class="app-main"><div class="app-header"><div><span class="chip chip-accent">Admin</span><h1>Rewards</h1><p class="muted">Create rewards, set eligibility, and approve redemptions. Configure Supabase and use RLS-protected queries/actions; extend <code>assets/js/admin.js</code> for module-specific CRUD.</p></div></div>
+<div class="notice" data-dashboard-notice></div>
+<div class="card"><h3>Module ready for data wiring</h3><p>This admin route is authenticated and role-guarded in the UI; enforce all permissions in Supabase RLS, policies, and Edge Functions. For immediate operations, use Supabase SQL/Table Editor with admin credentials.</p></div>
+</div></div></main><div data-mount="footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../assets/js/config.js"></script><script src="../assets/js/supabase-client.js"></script><script src="../assets/js/guard.js"></script><script src="../assets/js/admin.js"></script><script src="../assets/js/app.js"></script>
+</body></html>

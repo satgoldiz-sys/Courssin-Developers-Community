@@ -1,0 +1,1177 @@
+PROJECT NAME: COMMUNITY OF COURSSIN DEVELOPERS (CCD)
+
+TAGLINE: BUILD • LEARN • INNOVATE • GROW
+
+==================================================
+1. PROJECT OVERVIEW
+==================================================
+
+Build a professional, modern, creative, responsive and fully functional website for Community of Courssin Developers (CCD).
+
+CCD is a technology community designed to bring together beginner developers, intermediate developers and experienced technology professionals.
+
+The community exists to encourage continuous learning, practical development, teamwork, networking, innovation and professional growth.
+
+The goal is to eliminate the isolation that often occurs when developers learn independently without interacting with other professionals.
+
+CCD will provide an environment where members can:
+- Learn from one another.
+- Participate in development challenges.
+- Work on collaborative projects.
+- Receive assigned technical tasks.
+- Share knowledge and resources.
+- Develop teamwork and leadership skills.
+- Participate in technology events.
+- Earn recognition and rewards.
+- Build professional relationships.
+
+This must not look like an ordinary blog or basic membership website.
+
+It should look and function like a premium technology community platform.
+
+==================================================
+2. TECHNOLOGY STACK
+==================================================
+
+Use ONLY the following technologies:
+
+FRONTEND:
+- HTML5
+- CSS3
+- Vanilla JavaScript
+
+BACKEND:
+- Supabase
+
+DATABASE:
+- Supabase PostgreSQL
+- Supabase SQL
+
+AUTHENTICATION:
+- Supabase Authentication
+
+STORAGE:
+- Supabase Storage
+
+SERVER-SIDE FUNCTIONS:
+- Supabase Edge Functions
+
+EMAIL:
+- Resend API
+
+HOSTING:
+- Vercel
+
+IMPORTANT:
+Do not use React, Next.js, Vue, Angular, Tailwind CSS, Bootstrap or other frontend frameworks.
+
+All frontend functionality must be implemented using HTML, CSS and vanilla JavaScript.
+
+Use Supabase Edge Functions to securely communicate with Resend.
+
+Never expose API keys, service-role keys or sensitive credentials in frontend JavaScript.
+
+==================================================
+3. BRAND IDENTITY AND DESIGN
+==================================================
+
+Use the uploaded Community of Courssin Developers logo as the primary brand reference.
+
+Follow its colour scheme.
+
+PRIMARY COLOURS:
+
+Neon Lime Green: #B7FF00
+Rich Black: #050505
+White: #FFFFFF
+Soft Gray: #F5F5F5
+Dark Gray: #202020
+
+DESIGN DIRECTION:
+
+- Premium technology aesthetic.
+- Modern developer-inspired interface.
+- Clean layouts.
+- Attractive cards.
+- Smooth animations.
+- Professional typography.
+- Responsive navigation.
+- Beautiful dashboards.
+- Subtle hover effects.
+- Modern icons.
+- Dark and light interface options.
+
+Typography:
+- Headings: Poppins ExtraBold or Montserrat Bold.
+- Body: Inter or Poppins.
+- Buttons: Poppins SemiBold.
+
+The website must work perfectly on mobile phones, tablets and desktop computers.
+
+==================================================
+4. PUBLIC WEBSITE
+==================================================
+
+Create the following public website pages:
+
+1. Home
+2. About Us
+3. Membership
+4. Activities
+5. Projects
+6. Community
+7. Rewards
+8. Events
+9. Tech Cohort
+10. Contact
+11. Login
+12. Register
+
+HOMEPAGE HERO SECTION:
+
+Main heading:
+
+"YOUR SKILLS GROW BETTER WHEN YOU BUILD TOGETHER."
+
+Supporting text:
+
+"Welcome to Community of Courssin Developers, a collaborative technology ecosystem where beginners, growing developers and experienced professionals connect, learn, build projects, solve problems and grow together."
+
+Primary button:
+JOIN THE COMMUNITY
+
+Secondary button:
+EXPLORE THE COMMUNITY
+
+Include attractive developer-themed visuals showing people collaborating around computers.
+
+ABOUT SECTION:
+
+Explain:
+- Why CCD exists.
+- The importance of collaboration.
+- The problems associated with learning in isolation.
+- The importance of practical experience.
+- How the community helps developers grow.
+
+MEMBERSHIP SECTION:
+
+Display three membership categories:
+
+BEGINNER:
+Start Your Journey.
+
+INTERMEDIATE:
+Improve Your Skills.
+
+ADVANCED:
+Lead and Innovate.
+
+ACTIVITIES SECTION:
+
+Showcase:
+- Weekly development challenges.
+- Group projects.
+- Coding competitions.
+- Tech discussions.
+- Mentorship sessions.
+- Knowledge-sharing sessions.
+- Project demonstrations.
+
+REWARDS SECTION:
+
+Showcase:
+- Customized CCD T-shirts.
+- Free technology event tickets.
+- Discounted conference tickets.
+- Certificates.
+- Special recognition.
+- Mentorship opportunities.
+- Learning resources.
+
+PROJECT SHOWCASE:
+
+Display completed projects and ongoing collaborative projects.
+
+TESTIMONIALS:
+
+Allow members to share their experiences.
+
+FINAL CALL TO ACTION:
+
+"Don't Just Learn to Code. Build Something With Us."
+
+Button:
+BECOME A MEMBER.
+
+==================================================
+5. TWO-BATCH MEMBERSHIP SYSTEM
+==================================================
+
+CCD admits members twice every year.
+
+Each membership batch lasts six months.
+
+BATCH A:
+January - June.
+
+BATCH B:
+July - December.
+
+Each batch operates independently but belongs to the same community.
+
+Example:
+
+2027 MEMBERSHIP CALENDAR:
+
+January - June 2027:
+Batch A.
+
+July - December 2027:
+Batch B.
+
+The system must support different years and configurable registration periods.
+
+Each batch must have:
+
+- Batch name.
+- Batch year.
+- Start date.
+- End date.
+- Registration opening date.
+- Registration closing date.
+- WhatsApp group invitation.
+- Membership capacity (optional).
+- Batch description.
+- Batch status.
+
+BATCH STATUSES:
+
+- Upcoming.
+- Registration Open.
+- Registration Closed.
+- Active.
+- Closing Soon.
+- Completed.
+- Archived.
+
+Administrators should be able to open and close registration manually.
+
+The system should automatically identify the active batch based on configured dates.
+
+==================================================
+6. MEMBERSHIP REGISTRATION
+==================================================
+
+Implement a two-stage registration process.
+
+STAGE ONE: ACCOUNT CREATION
+
+Visitors should be able to create an account using:
+
+- Full name.
+- Email address.
+- Password.
+- Confirm password.
+
+Use Supabase Authentication.
+
+Require email verification before allowing membership registration.
+
+STAGE TWO: COMMUNITY MEMBERSHIP REGISTRATION
+
+After logging in, users should access a membership registration form.
+
+PERSONAL INFORMATION:
+
+- Full name.
+- Email address.
+- Phone number.
+- Country.
+- City.
+- Profile picture (optional).
+
+DEVELOPMENT INFORMATION:
+
+- Preferred development category.
+- Current skill level.
+- Technologies and tools currently used.
+- Areas of interest.
+- GitHub profile (optional).
+- Portfolio website (optional).
+- LinkedIn profile (optional).
+
+ADDITIONAL INFORMATION:
+
+- Why do you want to join CCD?
+- Do you have previous teamwork experience?
+- Are you available for group projects and activities?
+
+BATCH SELECTION:
+
+Display available batches.
+
+Example:
+
+Batch A - January to June 2027.
+Batch B - July to December 2027.
+
+Only display batches whose registration status is OPEN.
+
+Allow the applicant to select their preferred batch.
+
+Include acceptance of community rules and terms.
+
+REGISTRATION SUBMISSION:
+
+When the user clicks SUBMIT:
+
+1. Validate all required information.
+2. Verify the authenticated user.
+3. Check whether the selected batch is open.
+4. Check for duplicate registration.
+5. Save the membership application in Supabase.
+6. Retrieve the correct batch information.
+7. Retrieve the corresponding WhatsApp group invitation securely.
+8. Trigger a Supabase Edge Function.
+9. Send a confirmation email through Resend.
+10. Display a successful registration message.
+
+Prevent duplicate registrations into the same batch.
+
+==================================================
+7. RESEND EMAIL INTEGRATION
+==================================================
+
+Use Resend for automated community emails.
+
+All email requests must be handled through Supabase Edge Functions.
+
+Never expose the Resend API key in frontend JavaScript.
+
+IMPLEMENT THE FOLLOWING EMAILS:
+
+- Welcome email.
+- Successful membership registration.
+- Batch announcements.
+- Leadership appointment notifications.
+- Task assignment notifications.
+- Task approval notifications.
+- Event invitations.
+- Tech Cohort announcements.
+- Reward notifications.
+
+SUCCESSFUL REGISTRATION EMAIL:
+
+Subject:
+Welcome to Community of Courssin Developers!
+
+Email content:
+
+Hello [Member Name],
+
+Congratulations!
+
+Your registration into the Community of Courssin Developers has been successfully received.
+
+We are excited to welcome you into our growing community of developers, innovators and technology enthusiasts.
+
+YOUR MEMBERSHIP DETAILS:
+
+Community: Community of Courssin Developers.
+
+Batch: [Batch Name].
+
+Membership Category: [Category].
+
+Registration Status: Successful.
+
+YOUR NEXT STEP:
+
+Join your designated batch WhatsApp group using the button below.
+
+[JOIN YOUR BATCH WHATSAPP GROUP]
+
+This group will serve as an important communication channel for announcements, activities, discussions and onboarding information.
+
+Remember our philosophy:
+
+BUILD. LEARN. INNOVATE. GROW.
+
+Welcome aboard!
+
+Community of Courssin Developers (CCD).
+
+==================================================
+8. WHATSAPP GROUP INTEGRATION
+==================================================
+
+Every batch must have its own WhatsApp group invitation link.
+
+For example:
+
+Batch A 2027:
+Its own WhatsApp group.
+
+Batch B 2027:
+Its own WhatsApp group.
+
+Store WhatsApp invitation links securely in the database.
+
+Do not hardcode WhatsApp links in public frontend JavaScript.
+
+After successful membership registration:
+
+- Retrieve the correct batch invitation.
+- Send it through Resend.
+- Include it in the confirmation email.
+- Display a JOIN WHATSAPP GROUP button on the success page.
+
+Allow administrators to update expired or replaced WhatsApp links.
+
+Only send the invitation associated with the member's registered batch.
+
+==================================================
+9. BATCH LEADERSHIP STRUCTURE
+==================================================
+
+Every batch should have its own leadership team.
+
+Allow administrators to appoint:
+
+1. Batch Lead.
+2. Assistant Batch Lead.
+3. General Secretary.
+4. Assistant Secretary.
+5. Technical Coordinator.
+6. Project Coordinator.
+7. Organising Secretary.
+8. Public Relations Officer.
+9. Welfare Officer.
+10. Team Leaders.
+11. Other designated executives.
+
+RESPONSIBILITIES:
+
+BATCH LEAD:
+Oversees the entire batch.
+
+ASSISTANT BATCH LEAD:
+Supports the batch lead.
+
+GENERAL SECRETARY:
+Records meetings, decisions and important activities.
+
+TECHNICAL COORDINATOR:
+Coordinates technical activities.
+
+PROJECT COORDINATOR:
+Oversees collaborative projects.
+
+ORGANISING SECRETARY:
+Coordinates programmes and events.
+
+PUBLIC RELATIONS OFFICER:
+Handles publicity and communication.
+
+WELFARE OFFICER:
+Handles members' welfare.
+
+TEAM LEADERS:
+Supervise individual development teams.
+
+ADMINISTRATOR FUNCTIONS:
+
+- Appoint executives.
+- Replace executives.
+- Assign responsibilities.
+- Set appointment dates.
+- View leadership history.
+- Remove appointments when necessary.
+
+Display leadership positions on member profiles.
+
+==================================================
+10. CCD TRANSITION AND DELEGATION PROGRAMME
+==================================================
+
+Create a dedicated system for outgoing batch members.
+
+At the end of every six-month membership cycle, selected members of the outgoing batch should participate in organising the next Tech Cohort.
+
+This programme should be called:
+
+CCD TRANSITION & DELEGATION PROGRAMME.
+
+Administrators should be able to select outgoing members for:
+
+- Tech Cohort Organisers.
+- Delegates.
+- Technical Organisers.
+- Event Coordinators.
+- Publicity Organisers.
+- Registration Coordinators.
+- Other organising positions.
+
+TRANSITION PROCESS:
+
+STAGE 1:
+Outgoing members complete their assignments and projects.
+
+STAGE 2:
+Administrators select outstanding and committed members.
+
+STAGE 3:
+Selected members receive organising appointments.
+
+STAGE 4:
+The organising committee plans the next Tech Cohort.
+
+STAGE 5:
+The Tech Cohort takes place.
+
+STAGE 6:
+The outgoing committee documents its activities and completes the handover.
+
+Maintain historical records of appointments and committee activities.
+
+==================================================
+11. CCD TECH COHORT
+==================================================
+
+Every six months, CCD should organise a major technology gathering.
+
+Official name:
+
+CCD TECH COHORT
+
+Theme:
+
+CONNECT. COLLABORATE. CREATE.
+
+The Tech Cohort is a major community programme held at the end of every six-month batch.
+
+POSSIBLE ACTIVITIES:
+
+- Web development workshops.
+- Cybersecurity sessions.
+- Artificial intelligence discussions.
+- Graphic design workshops.
+- UI/UX presentations.
+- Software development demonstrations.
+- Technology career discussions.
+- Networking sessions.
+- Group project exhibitions.
+- Developer competitions.
+- Guest speaker sessions.
+- Awards and recognition.
+
+Create a dedicated Tech Cohort page.
+
+Allow administrators to manage:
+
+- Event title.
+- Theme.
+- Date.
+- Venue.
+- Event description.
+- Speakers.
+- Workshops.
+- Organising committee.
+- Delegates.
+- Registration.
+- Attendance.
+- Awards.
+- Event reports.
+
+The event may be physical, virtual or hybrid.
+
+==================================================
+12. MEMBER DASHBOARD
+==================================================
+
+Create a personalised dashboard for every registered member.
+
+DASHBOARD NAVIGATION:
+
+- Overview.
+- My Profile.
+- My Membership.
+- My Batch.
+- My Team.
+- My Tasks.
+- Projects.
+- Challenges.
+- Discussions.
+- Learning Resources.
+- Events.
+- Tech Cohort.
+- Achievements.
+- Leaderboard.
+- Rewards.
+- Notifications.
+- Settings.
+
+DASHBOARD OVERVIEW:
+
+Display:
+
+- Welcome message.
+- Profile picture.
+- Membership category.
+- Current batch.
+- Batch membership status.
+- Assigned development team.
+- Leadership position (if applicable).
+- Total points.
+- Current leaderboard position.
+- Completed tasks.
+- Pending tasks.
+- Ongoing projects.
+- Achievement badges.
+- Recent activities.
+
+Display batch duration and remaining membership time.
+
+==================================================
+13. TEAM MANAGEMENT SYSTEM
+==================================================
+
+Allow administrators to create development teams.
+
+Example:
+
+TEAM ALPHA:
+5 developers.
+
+TEAM BETA:
+5 developers.
+
+TEAM GAMMA:
+4 developers.
+
+TEAM DELTA:
+5 developers.
+
+Each team should have:
+
+- Team name.
+- Team leader.
+- Assigned members.
+- Project objectives.
+- Tasks.
+- Deadlines.
+- Progress tracking.
+- Team discussions.
+
+Members should be able to:
+
+- View teammates.
+- View assigned projects.
+- View individual responsibilities.
+- Share updates.
+- Submit contributions.
+- Communicate with teammates.
+- Track team progress.
+
+==================================================
+14. TASK MANAGEMENT SYSTEM
+==================================================
+
+Build a complete task management interface.
+
+Each task should include:
+
+- Task title.
+- Description.
+- Instructions.
+- Assigned member.
+- Assigned team.
+- Difficulty level.
+- Start date.
+- Submission deadline.
+- Task status.
+- Reference materials.
+- Submission requirements.
+- Available points.
+
+TASK STATUSES:
+
+- Assigned.
+- In Progress.
+- Submitted.
+- Under Review.
+- Revision Required.
+- Approved.
+- Completed.
+
+Allow members to submit:
+
+- GitHub repository links.
+- Live project links.
+- Screenshots.
+- Documents.
+- Other required files.
+
+Administrators and authorised reviewers should evaluate submissions and provide feedback.
+
+==================================================
+15. PROJECT COLLABORATION
+==================================================
+
+Create project workspaces.
+
+Each project should include:
+
+- Project title.
+- Project description.
+- Assigned team.
+- Project leader.
+- Project members.
+- Milestones.
+- Individual tasks.
+- Deadline.
+- GitHub repository.
+- Live project URL.
+- Progress tracking.
+- Project discussions.
+- Submission history.
+
+Allow team leaders to monitor individual contributions.
+
+==================================================
+16. POINTS AND ACHIEVEMENTS
+==================================================
+
+Create an automated points system.
+
+Example:
+
+Completing an assigned task: 10 points.
+
+Completing before deadline: 5 bonus points.
+
+Helping another member: 5 points.
+
+Successful team project: 20 points.
+
+Participating in a challenge: 10 points.
+
+Mentoring a beginner: 15 points.
+
+Outstanding contribution: 25 points.
+
+Only authorised reviewers or administrators can approve point awards.
+
+Include:
+
+- Weekly leaderboard.
+- Monthly leaderboard.
+- All-time leaderboard.
+- Individual badges.
+- Team performance rankings.
+- Consistency awards.
+- Outstanding contributor recognition.
+
+==================================================
+17. REWARD MANAGEMENT SYSTEM
+==================================================
+
+Create a reward centre.
+
+Possible rewards:
+
+- Customized CCD T-shirts.
+- Free technology event tickets.
+- Discounted conference tickets.
+- Certificates.
+- Special recognition.
+- Exclusive learning opportunities.
+- Mentorship opportunities.
+
+Each reward should include:
+
+- Reward title.
+- Description.
+- Required points.
+- Eligibility requirements.
+- Availability.
+- Redemption instructions.
+
+Administrators should manage reward availability and redemption requests.
+
+Rewards must depend on availability, eligibility and verified contributions.
+
+==================================================
+18. COMMUNITY DISCUSSION CENTRE
+==================================================
+
+Create a discussion platform.
+
+DISCUSSION CATEGORIES:
+
+- General Discussions.
+- Web Development.
+- Software Engineering.
+- Cybersecurity.
+- Graphics and UI/UX Design.
+- Artificial Intelligence.
+- Programming Challenges.
+- Career Opportunities.
+- Questions and Answers.
+
+Members should be able to:
+
+- Create posts.
+- Comment.
+- Reply.
+- Share resources.
+- Ask questions.
+- React to posts.
+- Report inappropriate content.
+
+Include moderation controls.
+
+==================================================
+19. ADMINISTRATOR DASHBOARD
+==================================================
+
+Create a comprehensive administrator dashboard.
+
+ADMIN MODULES:
+
+MEMBERSHIP MANAGEMENT:
+- View members.
+- Search members.
+- Filter by batch.
+- Filter by category.
+- Manage registrations.
+- View member profiles.
+
+BATCH MANAGEMENT:
+- Create batches.
+- Edit batches.
+- Set registration dates.
+- Set start and end dates.
+- Open and close registration.
+- Manage WhatsApp links.
+- Archive completed batches.
+
+LEADERSHIP MANAGEMENT:
+- Appoint executives.
+- Assign positions.
+- Replace leaders.
+- View leadership history.
+
+TEAM MANAGEMENT:
+- Create teams.
+- Assign members.
+- Appoint team leaders.
+- Monitor progress.
+
+TASK MANAGEMENT:
+- Create tasks.
+- Assign tasks.
+- Review submissions.
+- Approve tasks.
+- Award points.
+
+PROJECT MANAGEMENT:
+- Create projects.
+- Assign teams.
+- Monitor progress.
+
+TECH COHORT MANAGEMENT:
+- Create events.
+- Appoint organisers.
+- Appoint delegates.
+- Manage speakers.
+- Manage event registration.
+
+REWARD MANAGEMENT:
+- Create rewards.
+- Set eligibility.
+- Approve redemption.
+
+COMMUNICATION:
+- Send announcements.
+- Send batch emails.
+- Manage notifications.
+- Manage email templates.
+
+ANALYTICS:
+
+Display:
+
+- Total registered members.
+- Active members.
+- Total beginners.
+- Total intermediate members.
+- Total advanced members.
+- Members per batch.
+- Total completed projects.
+- Pending submissions.
+- Top-performing teams.
+- Member participation statistics.
+
+==================================================
+20. ALUMNI NETWORK
+==================================================
+
+Members should not lose their connection with CCD after completing their six-month batch.
+
+Introduce an ALUMNI NETWORK.
+
+After completing a batch, eligible members can be classified as alumni.
+
+Alumni should be able to:
+
+- Remain connected.
+- Mentor new members.
+- Participate in selected discussions.
+- Attend community events.
+- Share career opportunities.
+- Participate in special projects.
+- Apply for Tech Cohort organising roles.
+
+Maintain alumni records.
+
+==================================================
+21. DATABASE STRUCTURE
+==================================================
+
+Create a properly structured Supabase PostgreSQL database.
+
+Recommended tables:
+
+1. profiles
+2. batches
+3. memberships
+4. batch_leadership
+5. teams
+6. team_members
+7. tasks
+8. task_submissions
+9. projects
+10. project_members
+11. points
+12. achievements
+13. rewards
+14. reward_redemptions
+15. events
+16. tech_cohorts
+17. cohort_committee
+18. announcements
+19. discussions
+20. notifications
+21. batch_settings
+
+Use:
+
+- Primary keys.
+- Foreign keys.
+- Appropriate indexes.
+- Unique constraints.
+- Timestamps.
+- Database validation.
+- Proper relationships.
+
+One user can have membership records across different batches.
+
+One batch can have many members.
+
+One batch can have multiple leaders.
+
+One batch can have multiple development teams.
+
+One team can have multiple members.
+
+One task can have multiple submission records over time.
+
+One Tech Cohort can have multiple organisers and delegates.
+
+Implement Row Level Security (RLS) policies.
+
+==================================================
+22. SECURITY REQUIREMENTS
+==================================================
+
+Implement:
+
+- Supabase Authentication.
+- Email verification.
+- Role-based access control.
+- Protected dashboard routes.
+- Supabase RLS.
+- Secure Edge Functions.
+- Input validation.
+- Duplicate registration protection.
+- Secure file uploads.
+- Database constraints.
+- Secure API communication.
+
+USER ROLES:
+
+1. Super Administrator.
+2. Administrator.
+3. Batch Lead.
+4. Team Leader.
+5. Reviewer/Mentor.
+6. Community Member.
+7. Alumni.
+
+Ensure each role has appropriate permissions.
+
+Never trust frontend role checks alone.
+
+Enforce permissions through database policies and secure backend operations.
+
+==================================================
+23. PROJECT FILE STRUCTURE
+==================================================
+
+Organise the project professionally.
+
+Suggested structure:
+
+ccd/
+|
+|-- index.html
+|-- about.html
+|-- membership.html
+|-- activities.html
+|-- projects.html
+|-- rewards.html
+|-- events.html
+|-- tech-cohort.html
+|-- contact.html
+|-- login.html
+|-- register.html
+|
+|-- dashboard/
+|   |-- index.html
+|   |-- profile.html
+|   |-- membership.html
+|   |-- team.html
+|   |-- tasks.html
+|   |-- projects.html
+|   |-- discussions.html
+|   |-- achievements.html
+|   |-- rewards.html
+|   |-- notifications.html
+|
+|-- admin/
+|   |-- index.html
+|   |-- members.html
+|   |-- batches.html
+|   |-- leadership.html
+|   |-- teams.html
+|   |-- tasks.html
+|   |-- projects.html
+|   |-- tech-cohort.html
+|   |-- rewards.html
+|
+|-- assets/
+|   |-- css/
+|   |-- js/
+|   |-- images/
+|   |-- icons/
+|
+|-- supabase/
+|   |-- schema.sql
+|   |-- policies.sql
+|   |-- functions/
+|       |-- registration-email/
+|       |-- notifications/
+|       |-- membership/
+|
+|-- .gitignore
+|-- README.md
+
+You may improve the structure when necessary, but maintain clean separation of concerns.
+
+==================================================
+24. DEVELOPMENT APPROACH
+==================================================
+
+Build the application in phases.
+
+PHASE 1:
+Branding, project setup, homepage and public pages.
+
+PHASE 2:
+Supabase database schema and connection.
+
+PHASE 3:
+Authentication and user profiles.
+
+PHASE 4:
+Batch creation and management.
+
+PHASE 5:
+Membership registration and Resend email integration.
+
+PHASE 6:
+WhatsApp invitation integration.
+
+PHASE 7:
+Administrator dashboard and leadership appointments.
+
+PHASE 8:
+Member dashboard.
+
+PHASE 9:
+Teams, tasks and projects.
+
+PHASE 10:
+Points, achievements and rewards.
+
+PHASE 11:
+Tech Cohort and transition management.
+
+PHASE 12:
+Alumni network.
+
+PHASE 13:
+Testing, security and deployment.
+
+IMPORTANT DEVELOPMENT INSTRUCTIONS:
+
+- Do not build everything in one massive code generation.
+- Complete one phase before moving to another.
+- Explain the files being created.
+- Provide complete working code.
+- Avoid placeholder functionality for essential features.
+- Test database connections.
+- Test authentication.
+- Test registration.
+- Test email delivery.
+- Test WhatsApp invitation delivery.
+- Test role permissions.
+- Test mobile responsiveness.
+- Fix errors before proceeding.
+
+The final website must be a real, functional community management platform, not a static frontend demonstration.
+
+==================================================
+25. FINAL VISION
+==================================================
+
+Community of Courssin Developers should become a recognised technology community where developers of different experience levels connect, collaborate, innovate and grow.
+
+The platform should encourage developers to move beyond individual learning and participate in meaningful collaborative experiences.
+
+Our philosophy:
+
+BUILD.
+LEARN.
+INNOVATE.
+GROW.
+
+OUR MESSAGE:
+
+"Don't Code in Isolation. Grow in Collaboration."
+
+CCD shouldn't just produce developers.
+
+It should build a network of developers who help produce other developers.

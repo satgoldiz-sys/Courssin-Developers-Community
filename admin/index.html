@@ -1,0 +1,20 @@
+﻿<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Admin | CCD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/styles.css"></head>
+<body data-base="../" data-require-auth="true" data-require-admin="true"><div data-mount="header"></div>
+<main id="main" class="app-shell"><div class="app-layout"><nav class="sidebar" aria-label="Admin"><h5>Admin</h5><a href="index.html">Overview</a><a href="members.html">Members</a><a href="batches.html">Batches</a><a href="leadership.html">Leadership</a><a href="teams.html">Teams</a><a href="tasks.html">Tasks</a><a href="projects.html">Projects</a><a href="tech-cohort.html">Tech Cohort</a><a href="rewards.html">Rewards</a><a href="../dashboard/index.html">Member view</a><a href="#" data-signout>Sign out</a></nav>
+<div class="app-main"><div class="app-header"><div><span class="chip chip-accent">Administrator</span><h1>Admin overview</h1><p class="muted">Manage members, batches, teams, tasks, events, rewards, and communications. Permissions are enforced by Supabase RLS and roles.</p></div></div>
+<div class="notice" data-dashboard-notice></div>
+<div class="stat-grid">
+  <div class="stat-card"><div class="label">Profiles</div><div class="value" id="mMembers">, </div></div>
+  <div class="stat-card"><div class="label">Memberships</div><div class="value" id="mMemberships">, </div></div>
+  <div class="stat-card"><div class="label">Batches</div><div class="value" id="mBatches">, </div></div>
+  <div class="stat-card"><div class="label">Tasks</div><div class="value" id="mTasks">, </div></div>
+</div>
+<div class="grid-2"><article class="card"><h3>Batch management</h3><p>Create batches, set registration windows, open/close registration, and manage WhatsApp links in the database (never expose service keys in frontend).</p><a class="btn btn-primary" href="batches.html">Manage batches</a></article>
+<article class="card"><h3>Operations</h3><p>Use Supabase Table Editor/SQL for advanced admin operations until every module UI is extended. RLS and Edge Functions protect sensitive flows.</p><a class="btn btn-secondary" href="members.html">View members</a></article></div>
+</div></div></main><div data-mount="footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../assets/js/config.js"></script><script src="../assets/js/supabase-client.js"></script><script src="../assets/js/guard.js"></script><script src="../assets/js/admin.js"></script><script src="../assets/js/app.js"></script>
+</body></html>

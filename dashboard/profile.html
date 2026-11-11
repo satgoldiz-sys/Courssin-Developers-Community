@@ -1,0 +1,22 @@
+﻿<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>My Profile | CCD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/styles.css"></head>
+<body data-base="../" data-require-auth="true"><div data-mount="header"></div>
+<main id="main" class="app-shell"><div class="app-layout"><nav class="sidebar" aria-label="Dashboard"><h5>Member</h5><a href="index.html">Overview</a><a href="profile.html">My Profile</a><a href="membership.html">My Membership</a><a href="team.html">My Team</a><a href="tasks.html">My Tasks</a><a href="projects.html">Projects</a><a href="discussions.html">Discussions</a><a href="achievements.html">Achievements</a><a href="rewards.html">Rewards</a><a href="notifications.html">Notifications</a><a href="../admin/index.html">Admin</a><a href="#" data-signout>Sign out</a></nav>
+<div class="app-main"><div class="app-header"><div><span class="chip chip-accent">Member</span><h1>My Profile</h1><p class="muted">Update your account and public community details.</p></div></div>
+<form class="form-card" data-profile-form style="max-width:none;margin:0"><div class="notice" data-notice></div>
+<div class="form-grid">
+  <div class="field full"><label>Full name</label><input name="full_name" autocomplete="name"></div>
+  <div class="field"><label>Phone</label><input name="phone" autocomplete="tel"></div>
+  <div class="field"><label>City</label><input name="city"></div>
+  <div class="field"><label>Country</label><input name="country"></div>
+  <div class="field"><label>GitHub URL</label><input name="github_url" type="url" placeholder="https://"></div>
+  <div class="field"><label>Portfolio URL</label><input name="portfolio_url" type="url" placeholder="https://"></div>
+  <div class="field full"><label>LinkedIn URL</label><input name="linkedin_url" type="url" placeholder="https://"></div>
+  <div class="field full"><label>Bio</label><textarea name="bio"></textarea></div>
+</div><button class="btn btn-primary" type="submit">Save profile</button></form>
+</div></div></main><div data-mount="footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../assets/js/config.js"></script><script src="../assets/js/supabase-client.js"></script><script src="../assets/js/guard.js"></script><script src="../assets/js/dashboard.js"></script><script src="../assets/js/app.js"></script>
+</body></html>
