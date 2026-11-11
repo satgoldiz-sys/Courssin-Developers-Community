@@ -14,15 +14,15 @@
       </svg>`;
   }
 
-  function navLinks(base) {
+function navLinks(base) {
     return [
-      ["About", "about.html"],
-      ["Membership", "membership.html"],
-      ["Activities", "activities.html"],
-      ["Projects", "projects.html"],
-      ["Community", "community.html"],
-      ["Events", "events.html"],
-      ["Tech Cohort", "tech-cohort.html"]
+      ["About", "about"],
+      ["Membership", "membership"],
+      ["Activities", "activities"],
+      ["Projects", "projects"],
+      ["Community", "community"],
+      ["Events", "events"],
+      ["Tech Cohort", "tech-cohort"]
     ].map(([label, href]) => `<a href="${base}${href}">${label}</a>`).join("");
   }
 
@@ -60,34 +60,31 @@
         <div class="container footer-top">
           <div class="footer-grid">
             <div class="footer-brand">
-              <a class="brand" href="${base}index.html">${logoSvg()}<span class="brand-text"><strong>${brandWordmark()}</strong></span></a>
+              <a class="brand" href="${base}">${logoSvg()}<span class="brand-text"><strong>${brandWordmark()}</strong></span></a>
               <p>A global developer community where programmers, software engineers, and tech creators connect, learn together, build real projects, and grow through collaboration, mentorship, and hands-on experience.</p>
             </div>
             <div class="footer-col">
               <h5>Quick Links</h5>
               <ul>
-                <li><a href="${base}about.html">About CCD</a></li>
-                <li><a href="${base}membership.html">Membership</a></li>
-                <li><a href="${base}events.html">Events</a></li>
-                <li><a href="${base}tech-cohort.html">Tech Cohort</a></li>
+<li><a href="${base}about">About CCD</a></li>
+                <li><a href="${base}membership">Membership</a></li>
+                <li><a href="${base}events">Events</a></li>
+                <li><a href="${base}tech-cohort">Tech Cohort</a></li>
               </ul>
             </div>
-            <div class="footer-col">
+<div class="footer-col">
               <h5>Community</h5>
               <ul>
-                <li><a href="${base}activities.html">Activities</a></li>
-                <li><a href="${base}projects.html">Projects</a></li>
-                <li><a href="${base}rewards.html">Rewards</a></li>
-                <li><a href="${base}community.html">Discussions</a></li>
+                <li><a href="${base}activities">Activities</a></li>
+                <li><a href="${base}projects">Projects</a></li>
               </ul>
             </div>
             <div class="footer-col">
               <h5>Account</h5>
               <ul>
-                <li><a href="${base}login.html">Log in</a></li>
-                <li><a href="${base}register.html">Sign up</a></li>
-                <li><a href="${base}contact.html">Contact</a></li>
-                <li><a href="${base}dashboard/index.html">Dashboard</a></li>
+                <li><a href="${base}login">Log in</a></li>
+                <li><a href="${base}register">Sign up</a></li>
+                <li><a href="${base}contact">Contact</a></li>
               </ul>
             </div>
           </div>
@@ -96,8 +93,8 @@
           <div class="container footer-bottom-inner">
             <span>&copy; ${year} Community of Courssin Developers</span>
             <span class="footer-links">
-              <a href="${base}about.html">About</a>
-              <a href="${base}contact.html">Contact</a>
+<a href="${base}about">About</a>
+              <a href="${base}contact">Contact</a>
               <span>${BRAND.tagline}</span>
             </span>
           </div>
@@ -105,11 +102,14 @@
       </footer>`;
   }
 
-  function setActiveLinks() {
-    const path = location.pathname.split("/").pop() || "index.html";
-    document.querySelectorAll('.nav-links a, .footer-col a').forEach((a) => {
-      const href = a.getAttribute('href') || '';
-      if (href.endsWith(path)) a.setAttribute('aria-current', 'page');
+function setActiveLinks() {
+    const path = location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+    document.querySelectorAll('.nav-links a, .footer-col a, .footer-links a').forEach((a) => {
+      const href = (a.getAttribute('href') || '').replace(/\.html$/, '');
+      if (!href) return;
+      const norm = href.replace(/^\//, '');
+      const cur = path.replace(/^\//, '');
+      if (norm === cur || (cur === '' && norm === 'index')) a.setAttribute('aria-current', 'page');
     });
   }
 
@@ -210,14 +210,12 @@
   }
 
   function sampleEvents() {
-    const imgs = ['photos/workshop.jpg','photos/hackathon.jpg','photos/meetup.jpg','photos/cohort.jpg'];
+    const imgs = ['photos/meetup.jpg','photos/hackathon.jpg','photos/workshop.jpg','photos/cohort.jpg'];
     return [
-      { title: 'Frontend Build Night', type: 'Workshop', date: 'Sat, Nov 14 • 4:00 PM', location: 'Virtual / Discord', image: imgs[0], desc: 'Hands-on HTML, CSS, and JavaScript session focused on responsive UI patterns.' },
-      { title: 'CCD Pair Programming Sprint', type: 'Challenge', date: 'Wed, Nov 18 • 6:30 PM', location: 'Hybrid', image: imgs[1], desc: 'Team up to solve real feature tasks and practice collaborative workflows.' },
-      { title: 'Career Paths in Tech', type: 'Meetup', date: 'Fri, Nov 22 • 5:00 PM', location: 'Lagos / Virtual', image: imgs[2], desc: 'Mentors share practical advice on portfolios, interviews, and growth.' },
-      { title: 'Batch Project Demo Day', type: 'Showcase', date: 'Sun, Nov 29 • 3:00 PM', location: 'CCD Community Hub', image: imgs[3], desc: 'Members present completed projects and receive feedback from peers and leads.' },
-      { title: 'API & Supabase Basics', type: 'Workshop', date: 'Tue, Dec 2 • 6:00 PM', location: 'Virtual', image: imgs[0], desc: 'Intro to authentication, database queries, and secure app workflows.' },
-      { title: 'CCD Tech Cohort Planning', type: 'Flagship', date: 'Sat, Dec 6 • 10:00 AM', location: 'Hybrid', image: imgs[3], desc: 'Organizers and members prepare sessions, speakers, and community activities.' }
+      { title: 'NextGen Developers Meetup', type: 'Meetup', date: 'Saturday, 26 December 2026', location: 'Zoom', image: imgs[0], desc: 'Kick off the holiday season by connecting with developers, designers, tech enthusiasts, and aspiring professionals from different backgrounds. Expect insightful discussions on emerging technologies, practical learning sessions, networking opportunities, and inspiration for your tech journey in the coming year.' },
+      { title: 'TechXperience 2027', type: 'Conference', date: 'Saturday, 30 January 2027', location: 'Venue to be announced soon', image: imgs[1], desc: 'Start the year with a high-impact physical tech experience featuring expert speakers, hands-on demonstrations, interactive sessions, career opportunities, and meaningful networking. Whether you are a beginner or an experienced professional, TechXperience 2027 is designed to help you learn, connect, and grow.' },
+      { title: 'Tech Talks & Networking', type: 'Talks', date: 'Saturday, 3 April 2027', location: 'Zoom', image: imgs[2], desc: 'Join an engaging virtual gathering where technology professionals, students, entrepreneurs, and innovators come together to share ideas, discuss industry trends, explore emerging technologies, and build valuable professional connections, all from anywhere in the world.' },
+      { title: 'TechFest 2027', type: 'Festival', date: 'Saturday, 31 July 2027', location: 'Venue to be announced soon', image: imgs[3], desc: 'Celebrate innovation at one of the year\'s biggest tech gatherings. TechFest 2027 will feature inspiring keynote sessions, product showcases, exhibitions, workshops, networking opportunities, and interactive experiences designed to bring together the technology community for a day of learning, collaboration, and innovation.' }
     ];
   }
 
@@ -225,7 +223,7 @@
     document.querySelectorAll('[data-events]').forEach((root) => {
       const limit = parseInt(root.dataset.limit || '3', 10);
       const base = document.body.dataset.base || '';
-      const pool = sampleEvents().sort(() => Math.random() - 0.5).slice(0, limit);
+      const pool = sampleEvents().slice(0, limit);
       root.innerHTML = pool.map((ev) => `
         <article class="card event-card reveal is-visible">
           <img class="event-image" src="${base}assets/images/${ev.image}" alt="" loading="lazy">
@@ -234,7 +232,6 @@
             <h3>${ev.title}</h3>
             <p class="event-meta">${ev.date} · ${ev.location}</p>
             <p>${ev.desc}</p>
-            <span class="muted" style="font-size:.8125rem">Sample event shown until admin publishes a new event.</span>
           </div>
         </article>`).join('');
     });

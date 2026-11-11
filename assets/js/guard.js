@@ -21,7 +21,7 @@
     const { data: profile } = await sb.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
     const role = profile && profile.role;
     const ok = ['super_admin','administrator'].includes(role);
-    if (!ok) location.href = base + 'dashboard/index.html';
+    if (!ok) location.href = base + 'dashboard';
     window.CCD.role = role;
   }
   document.documentElement.classList.add('authed');

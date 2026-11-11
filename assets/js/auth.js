@@ -11,7 +11,7 @@
   async function signInWithGoogle(notice) {
     if (!ensureConfigured(notice)) return;
     const sb = CCD.getSupabase();
-    const redirectTo = location.origin + location.pathname.replace(/\/[^/]*$/, '') + '/' + CCD.getBase() + 'dashboard/index.html';
+    const redirectTo = location.origin + location.pathname.replace(/\/[^/]*$/, '') + '/' + CCD.getBase() + 'dashboard';
     CCD.setNotice(notice, 'Redirecting to Google...', '');
     const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
     if (error) CCD.setNotice(notice, error.message, 'error');
@@ -19,16 +19,50 @@
 
   async function handleLogin(form) {
     const notice = form.querySelector('[data-notice]');
+    const lockoutNotice = document.getElementById('lockoutNotice');
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (lockoutNotice) { lockoutNotice.style.display = 'none'; lockoutNotice.textContent = ''; }
       if (!ensureConfigured(notice)) return;
       const sb = CCD.getSupabase();
       const email = form.email.value.trim();
       const password = form.password.value;
       CCD.setNotice(notice, 'Signing in...', '');
-      const { data, error } = await sb.auth.signInWithPassword({ email, password });
-      if (error) return CCD.setNotice(notice, error.message, 'error');
-      if (data && data.user) location.href = CCD.getBase() + 'dashboard/index.html';
+
+      // Server-side progressive lockout via Edge Function
+      try {
+        const { data, error } = await sb.functions.invoke('login-lockout', { body: { email, password } });
+        if (error) {
+          CCD.setNotice(notice, error.message || 'Sign-in failed.', 'error');
+          return;
+        }
+        if (data && data.locked) {
+          CCD.setNotice(notice, '', '');
+          if (lockoutNotice) {
+            lockoutNotice.textContent = `Account temporarily locked. Try again in ${data.lockout_remaining_minutes} minute(s).`;
+            lockoutNotice.style.display = 'block';
+          }
+          return;
+        }
+        if (data && data.access_token) {
+          // Persist session returned by the Edge Function
+          const { error: setErr } = await sb.auth.setSession({
+            access_token: data.access_token,
+            refresh_token: data.refresh_token
+          });
+          if (setErr) CCD.setNotice(notice, setErr.message, 'error');
+          else location.href = CCD.getBase() + 'dashboard';
+          return;
+        }
+      } catch (err) {
+        CCD.setNotice(notice, err.message || 'Sign-in failed.', 'error');
+        return;
+      }
+
+      // Fallback: direct Supabase Auth (if Edge Function not deployed)
+      const { data: direct, error: directErr } = await sb.auth.signInWithPassword({ email, password });
+      if (directErr) return CCD.setNotice(notice, directErr.message, 'error');
+      if (direct && direct.user) location.href = CCD.getBase() + 'dashboard';
     });
     const g = form.querySelector('[data-google]');
     if (g) g.addEventListener('click', () => signInWithGoogle(notice));
@@ -57,7 +91,7 @@
         CCD.setNotice(notice, 'Account created. Check your email to verify your address, then log in to complete membership registration.', 'success');
         form.reset();
       } else if (data && data.session) {
-        location.href = CCD.getBase() + 'dashboard/index.html';
+        location.href = CCD.getBase() + 'dashboard';
       }
     });
     const g = form.querySelector('[data-google]');

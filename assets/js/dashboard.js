@@ -7,8 +7,10 @@
   }
   const sb = CCD.getSupabase();
   const { data: { session } } = await sb.auth.getSession();
-  if (!session) { location.href = (CCD.getBase() || '') + 'login.html'; return; }
+  if (!session) { location.href = (CCD.getBase() || '') + 'login'; return; }
   const user = session.user;
+  window.CCD.session = session;
+  window.CCD.user = user;
 
   async function loadOverview() {
     const [profile, memberships, tasks, points] = await Promise.all([
@@ -72,9 +74,9 @@
     CCD.setNotice(notice, 'Submitting registration...', '');
     const { data, error } = await sb.from('memberships').insert(payload).select('id').single();
     if (error) return CCD.setNotice(notice, error.message.includes('duplicate') ? 'You are already registered for this batch.' : error.message, 'error');
-    // Trigger email/WhatsApp edge function (best-effort)
+    // Trigger notification + (if approved) WhatsApp invite Edge Function (best-effort)
     try { await sb.functions.invoke('registration-email', { body: { membership_id: data.id } }); } catch (e) {}
-    CCD.setNotice(notice, 'Registration submitted successfully. Check your email for confirmation and WhatsApp group details.', 'success');
+    CCD.setNotice(notice, 'Registration submitted. A notification has been sent to you and the admin team for review.', 'success');
     const wa = document.getElementById('waResult');
     if (wa) wa.classList.add('is-visible');
   }
@@ -88,6 +90,6 @@
     if (pf) pf.addEventListener('submit', e => { e.preventDefault(); saveProfile(pf); });
     const bf = document.querySelector('[data-membership-form]');
     if (bf) { loadBatches(bf.batch_id); bf.addEventListener('submit', e => { e.preventDefault(); submitMembership(bf); }); }
-    document.querySelectorAll('[data-signout]').forEach(b => b.addEventListener('click', async () => { await sb.auth.signOut(); location.href = CCD.getBase() + 'index.html'; }));
+    document.querySelectorAll('[data-signout]').forEach(b => b.addEventListener('click', async () => { await sb.auth.signOut(); location.href = CCD.getBase() + ''; }));
   });
 })();
