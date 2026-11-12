@@ -36,6 +36,7 @@
         if (res) load();
       }));
     } catch (e) {
+      console.error('Could not load member list:', e);
       tbody.innerHTML = A.emptyState('Could not load members. Check Supabase configuration and policies.');
     }
   }
@@ -44,7 +45,7 @@
     const container = document.querySelector('[data-approvals]');
     if (!container) return;
     try {
-      const { data, error } = await sb.from('memberships').select('id,status,created_at,category,batches(name,year),profiles(full_name,email)').eq('status', 'pending').order('created_at', { ascending: false }).limit(50);
+      const { data, error } = await sb.from('memberships').select('id,status,created_at,category,batches(name,year),profiles!memberships_user_id_fkey(full_name,email)').eq('status', 'pending').order('created_at', { ascending: false }).limit(50);
       if (error) throw error;
       container.innerHTML = (data || []).map(m => `
         <div class="card" style="margin-bottom:12px">
@@ -69,6 +70,7 @@
         if (res) { loadApprovals(); load(); }
       }));
     } catch (e) {
+      console.error('Could not load registration approvals:', e);
       container.innerHTML = '<p class="muted">Could not load approvals. Check Supabase configuration and policies.</p>';
     }
   }
