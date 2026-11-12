@@ -227,6 +227,60 @@ create table if not exists public.events (
   event_type text,
   event_date timestamptz,
   venue text,
+  image_url text,
+  status text not null default 'published' constraint events_status_allowed check (status in ('draft','published','archived')),
+  created_by uuid references public.profiles(id),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- Public articles and media are published by administrators only.
+create table if not exists public.articles (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  slug text not null unique,
+  excerpt text,
+  body text not null,
+  cover_image_url text,
+  status text not null default 'draft' check (status in ('draft','published','archived')),
+  author_id uuid references public.profiles(id),
+  published_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.media_assets (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  description text,
+  object_path text not null unique,
+  public_url text not null,
+  media_type text not null,
+  alt_text text,
+  status text not null default 'draft' check (status in ('draft','published','archived')),
+  uploaded_by uuid references public.profiles(id),
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.event_organizers (
+  id uuid primary key default gen_random_uuid(),
+  event_id uuid not null references public.events(id) on delete cascade,
+  full_name text not null,
+  image_url text,
+  batch_id uuid references public.batches(id) on delete set null,
+  batch_position text not null,
+  volunteer_position text,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.event_volunteer_positions (
+  id uuid primary key default gen_random_uuid(),
+  event_id uuid not null references public.events(id) on delete cascade,
+  title text not null,
+  description text,
+  slots integer not null default 1 check (slots > 0),
+  status text not null default 'open' check (status in ('open','closed')),
   created_at timestamptz not null default now()
 );
 

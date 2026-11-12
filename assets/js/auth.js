@@ -8,6 +8,22 @@
     return false;
   }
 
+  async function explainFunctionError(error) {
+    const context = error && error.context;
+    let body = null;
+    if (context && typeof context.clone === 'function') {
+      try { body = await context.clone().json(); } catch { /* non-JSON gateway response */ }
+    }
+    if (body && typeof body.error === 'string') return body.error;
+    const status = context && typeof context.status === 'number' ? context.status : 0;
+    if (status === 404) return 'Email sign-in is not enabled yet: the login-lockout Edge Function is not deployed.';
+    if (status === 401) return 'The sign-in service rejected this request. Check the login-lockout function deployment and its authentication settings.';
+    if (status === 429) return 'Too many sign-in attempts. Please wait before trying again.';
+    if (status >= 500) return 'The sign-in service is temporarily unavailable. Check the Supabase Edge Function logs and server secrets.';
+    if (!status) return 'Could not reach the sign-in service. Check your connection and confirm the Supabase function is deployed.';
+    return error && error.message ? error.message : 'Sign-in failed. Please try again.';
+  }
+
   async function signInWithGoogle(notice) {
     if (!ensureConfigured(notice)) return;
     const sb = CCD.getSupabase();
@@ -27,13 +43,15 @@
       const sb = CCD.getSupabase();
       const email = form.email.value.trim();
       const password = form.password.value;
+      const submitButton = form.querySelector('[type="submit"]');
+      if (submitButton) submitButton.disabled = true;
       CCD.setNotice(notice, 'Signing in...', '');
 
       // Server-side progressive lockout via Edge Function
       try {
         const { data, error } = await sb.functions.invoke('login-lockout', { body: { email, password } });
         if (error) {
-          CCD.setNotice(notice, error.message || 'Sign-in failed.', 'error');
+          CCD.setNotice(notice, await explainFunctionError(error), 'error');
           return;
         }
         if (data && data.locked) {
@@ -54,15 +72,12 @@
           else location.href = CCD.getBase() + 'dashboard';
           return;
         }
+        CCD.setNotice(notice, 'The sign-in service returned an unexpected response. Please try again.', 'error');
       } catch (err) {
         CCD.setNotice(notice, err.message || 'Sign-in failed.', 'error');
-        return;
+      } finally {
+        if (submitButton) submitButton.disabled = false;
       }
-
-      // Fallback: direct Supabase Auth (if Edge Function not deployed)
-      const { data: direct, error: directErr } = await sb.auth.signInWithPassword({ email, password });
-      if (directErr) return CCD.setNotice(notice, directErr.message, 'error');
-      if (direct && direct.user) location.href = CCD.getBase() + 'dashboard';
     });
     const g = form.querySelector('[data-google]');
     if (g) g.addEventListener('click', () => signInWithGoogle(notice));

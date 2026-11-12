@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Articles & Media | CCD Admin</title>
+  <meta name="description" content="Publish CCD articles and manage the community media library.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body data-base="../" data-require-auth="true" data-require-admin="true">
+  <div data-mount="header"></div>
+  <main id="main" class="app-shell"><div class="app-layout">
+    <nav class="sidebar" aria-label="Admin"><h5>Admin</h5><a href="/admin">Overview</a><a href="/admin/members">Members</a><a href="/admin/batches">Batches</a><a href="/admin/leadership">Leadership</a><a href="/admin/teams">Teams</a><a href="/admin/tasks">Tasks</a><a href="/admin/projects">Projects</a><a href="/admin/tech-cohort">Tech Cohort</a><a href="/admin/rewards">Rewards</a><a href="/admin/events">Events</a><a href="/admin/content">Articles & Media</a><a href="/dashboard">Member view</a><a href="#" data-signout>Sign out</a></nav>
+    <div class="app-main">
+      <div class="app-header"><div><span class="chip chip-accent">Admin publishing</span><h1>Articles & media</h1><p class="muted">Write community updates, publish stories, and upload approved images, video, audio, or PDF media.</p></div></div>
+      <div class="notice" data-dashboard-notice></div>
+      <form class="form-card" data-article-form>
+        <input type="hidden" name="id">
+        <h2 data-article-form-title>Write an article</h2>
+        <div class="form-grid">
+          <div class="field"><label for="article-title">Title</label><input id="article-title" name="title" maxlength="180" required></div>
+          <div class="field"><label for="article-slug">Page address</label><input id="article-slug" name="slug" maxlength="180" pattern="[a-z0-9]+(-[a-z0-9]+)*" required></div>
+          <div class="field full"><label for="article-excerpt">Summary</label><textarea id="article-excerpt" name="excerpt" maxlength="1000" rows="2"></textarea></div>
+          <div class="field full"><label for="article-body">Article</label><textarea id="article-body" name="body" maxlength="100000" rows="9" required></textarea><span class="help">Plain text is rendered safely; line breaks are preserved.</span></div>
+          <div class="field"><label for="article-cover">Cover image</label><input id="article-cover" name="cover" type="file" accept="image/jpeg,image/png,image/webp"></div>
+          <div class="field"><label for="article-status">Visibility</label><select id="article-status" name="status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></div>
+        </div>
+        <div class="toolbar"><button class="btn btn-primary" type="submit">Save article</button><button class="btn btn-secondary" type="button" data-article-reset>Clear form</button></div>
+      </form>
+      <h2>Articles</h2>
+      <div class="table-card"><div class="table-wrap"><table><thead><tr><th>Article</th><th>Status</th><th>Published</th><th>Manage</th></tr></thead><tbody data-articles-table><tr><td colspan="4" class="muted">Loading articles…</td></tr></tbody></table></div></div>
+      <form class="form-card" data-media-form>
+        <h2>Add media to the library</h2>
+        <div class="form-grid">
+          <div class="field"><label for="media-title">Title</label><input id="media-title" name="title" maxlength="180" required></div>
+          <div class="field"><label for="media-file">File</label><input id="media-file" name="file" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,audio/mpeg,application/pdf" required><span class="help">Maximum 10 MB. Images, MP4, MP3, and PDF.</span></div>
+          <div class="field"><label for="media-alt">Image alt text</label><input id="media-alt" name="alt_text" maxlength="300"></div>
+          <div class="field"><label for="media-status">Visibility</label><select id="media-status" name="status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></div>
+          <div class="field full"><label for="media-description">Description</label><textarea id="media-description" name="description" maxlength="3000" rows="3"></textarea></div>
+        </div>
+        <button class="btn btn-primary" type="submit">Upload media</button>
+      </form>
+      <h2>Media library</h2>
+      <div class="table-card"><div class="table-wrap"><table><thead><tr><th>Title</th><th>Type</th><th>Status</th><th>Manage</th></tr></thead><tbody data-media-table><tr><td colspan="4" class="muted">Loading media…</td></tr></tbody></table></div></div>
+    </div>
+  </div></main>
+  <div data-mount="footer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="../assets/js/config.js"></script><script src="../assets/js/supabase-client.js"></script><script src="../assets/js/clean-links.js"></script><script src="../assets/js/guard.js"></script><script src="../assets/js/admin-modules.js"></script><script src="../assets/js/admin-media.js"></script><script src="../assets/js/admin-content.js"></script><script src="../assets/js/app.js"></script>
+</body>
+</html>

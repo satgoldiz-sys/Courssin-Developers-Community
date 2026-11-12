@@ -14,7 +14,7 @@
 
   async function loadOverview() {
     const [profile, memberships, tasks, points] = await Promise.all([
-      sb.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+      sb.from('profiles').select('id,full_name,email,phone,country,city,avatar_url,bio,github_url,portfolio_url,linkedin_url,role,created_at,updated_at').eq('id', user.id).maybeSingle(),
       sb.from('memberships').select('*, batches(name,year,status,start_date,end_date)').eq('user_id', user.id).order('created_at', { ascending: false }),
       sb.from('tasks').select('id,title,status,due_date,points').or(`assigned_to.eq.${user.id}`).limit(20),
       sb.from('points').select('points').eq('user_id', user.id)
@@ -67,8 +67,7 @@
       why_join: form.why_join?.value,
       teamwork_experience: form.teamwork_experience?.value,
       availability: form.availability?.value,
-      terms_accepted: !!form.terms?.checked,
-      status: 'pending'
+      terms_accepted: !!form.terms?.checked
     };
     if (!payload.terms_accepted) return CCD.setNotice(notice, 'You must accept the community rules and terms.', 'error');
     CCD.setNotice(notice, 'Submitting registration...', '');

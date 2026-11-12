@@ -45,8 +45,17 @@
 
       tbody && tbody.querySelectorAll('[data-request]').forEach(btn => btn.addEventListener('click', async () => {
         const rewardId = btn.dataset.request;
-        const { error } = await sb.from('reward_redemptions').insert({ reward_id: rewardId, user_id: user.id, status: 'pending' });
-        if (error) alert(error.message); else { load(); }
+        btn.disabled = true;
+        const { error } = await sb.functions.invoke('request-reward', { body: { reward_id: rewardId } });
+        if (error) {
+          btn.disabled = false;
+          const notice = document.querySelector('[data-dashboard-notice]');
+          M.setNotice(notice, error.message || 'The reward request could not be completed.', 'error');
+          return;
+        }
+        const notice = document.querySelector('[data-dashboard-notice]');
+        M.setNotice(notice, 'Reward request submitted for review.', 'success');
+        load();
       }));
     } catch (e) {
       if (tbody) tbody.innerHTML = M.emptyState('Could not load rewards. Check Supabase configuration and policies.');

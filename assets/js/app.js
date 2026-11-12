@@ -5,24 +5,20 @@
     tagline: "BUILD • LEARN • INNOVATE • GROW"
   };
 
-  function logoSvg() {
-    return `
-      <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-        <rect width="64" height="64" rx="12" fill="#063B2A"/>
-        <rect x="3" y="3" width="58" height="58" rx="10" fill="none" stroke="#FFD21F" stroke-opacity="0.35"/>
-        <path d="M20 20h10v6h-4v12h4v6H20zM34 20h10v24h-6V26h-4z" fill="#FFD21F"/>
-      </svg>`;
+  function logoSvg(base) {
+    return `<img class="brand-mark" src="${base}assets/images/ccd-logo.svg" alt="" aria-hidden="true">`;
   }
 
-function navLinks(base) {
+  function navLinks(base) {
     return [
-      ["About", "about"],
-      ["Membership", "membership"],
-      ["Activities", "activities"],
-      ["Projects", "projects"],
-      ["Community", "community"],
-      ["Events", "events"],
-      ["Tech Cohort", "tech-cohort"]
+      ["About CCD", "about.html"],
+      ["Membership", "membership.html"],
+      ["Activities", "activities.html"],
+      ["Projects", "projects.html"],
+      ["Community", "community.html"],
+      ["Articles & Media", "articles.html"],
+      ["Events", "events.html"],
+      ["Tech Cohort", "tech-cohort.html"]
     ].map(([label, href]) => `<a href="${base}${href}">${label}</a>`).join("");
   }
 
@@ -32,7 +28,7 @@ function navLinks(base) {
       <header class="site-header" data-header>
         <div class="container nav-wrap">
           <a class="brand" href="${base}index.html" aria-label="Community of Courssin Developers home">
-            ${logoSvg()}
+            ${logoSvg(base)}
             <span class="brand-text">
               <strong>${brandWordmark()}</strong>
             </span>
@@ -60,7 +56,7 @@ function navLinks(base) {
         <div class="container footer-top">
           <div class="footer-grid">
             <div class="footer-brand">
-              <a class="brand" href="${base}">${logoSvg()}<span class="brand-text"><strong>${brandWordmark()}</strong></span></a>
+              <a class="brand" href="${base}index.html" aria-label="Community of Courssin Developers home">${logoSvg(base)}<span class="brand-text"><strong>${brandWordmark()}</strong></span></a>
               <p>A global developer community where programmers, software engineers, and tech creators connect, learn together, build real projects, and grow through collaboration, mentorship, and hands-on experience.</p>
             </div>
             <div class="footer-col">
@@ -70,11 +66,13 @@ function navLinks(base) {
                 <li><a href="${base}membership.html">Membership</a></li>
                 <li><a href="${base}events.html">Events</a></li>
                 <li><a href="${base}tech-cohort.html">Tech Cohort</a></li>
+                <li><a href="${base}articles.html">Articles & Media</a></li>
               </ul>
             </div>
 <div class="footer-col">
               <h5>Community</h5>
               <ul>
+                <li><a href="${base}community.html">Community</a></li>
                 <li><a href="${base}activities.html">Activities</a></li>
                 <li><a href="${base}projects.html">Projects</a></li>
               </ul>
@@ -103,14 +101,28 @@ function navLinks(base) {
   }
 
 function setActiveLinks() {
-    const path = location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
-    document.querySelectorAll('.nav-links a, .footer-col a, .footer-links a').forEach((a) => {
-      const href = (a.getAttribute('href') || '').replace(/\.html$/, '');
-      if (!href) return;
-      const norm = href.replace(/^\//, '');
-      const cur = path.replace(/^\//, '');
-      if (norm === cur || (cur === '' && norm === 'index')) a.setAttribute('aria-current', 'page');
+    const normalize = (path) => {
+      const clean = path.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+      return clean.replace(/\/index$/, '') || '/';
+    };
+    const current = normalize(location.pathname);
+    document.querySelectorAll('.nav-links a, .sidebar a, .footer-col a, .footer-links a').forEach((a) => {
+      const href = a.getAttribute('href') || '';
+      if (!href || href === '#' || /^(https?:|mailto:|tel:|javascript:)/i.test(href)) return;
+      const target = normalize(new URL(href, location.href).pathname);
+      if (target === current || (current === '/' && target === '/index')) a.setAttribute('aria-current', 'page');
     });
+  }
+
+  function mountAdminLinks() {
+    const nav = document.querySelector('.sidebar[aria-label="Admin"]');
+    if (!nav || nav.querySelector('[data-admin-content-links]')) return;
+    const marker = nav.querySelector('[data-signout]');
+    const group = document.createElement('span');
+    group.dataset.adminContentLinks = 'true';
+    group.style.display = 'contents';
+    group.innerHTML = '<a href="/admin/events">Events</a><a href="/admin/content">Articles &amp; Media</a>';
+    nav.insertBefore(group, marker || null);
   }
 
   function setupNav() {
@@ -243,6 +255,7 @@ function setActiveLinks() {
     const footerMount = document.querySelector('[data-mount="footer"]');
     if (headerMount) headerMount.outerHTML = header(base);
     if (footerMount) footerMount.outerHTML = footer(base);
+    mountAdminLinks();
     setActiveLinks();
     setupNav();
     setupTheme();

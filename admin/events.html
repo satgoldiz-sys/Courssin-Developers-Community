@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Events & Organizers | CCD Admin</title>
+  <meta name="description" content="Publish CCD events and manage organizers, batch positions, and volunteer opportunities.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body data-base="../" data-require-auth="true" data-require-admin="true">
+  <div data-mount="header"></div>
+  <main id="main" class="app-shell"><div class="app-layout">
+    <nav class="sidebar" aria-label="Admin"><h5>Admin</h5><a href="/admin">Overview</a><a href="/admin/members">Members</a><a href="/admin/batches">Batches</a><a href="/admin/leadership">Leadership</a><a href="/admin/teams">Teams</a><a href="/admin/tasks">Tasks</a><a href="/admin/projects">Projects</a><a href="/admin/tech-cohort">Tech Cohort</a><a href="/admin/rewards">Rewards</a><a href="/admin/events">Events</a><a href="/admin/content">Articles & Media</a><a href="/dashboard">Member view</a><a href="#" data-signout>Sign out</a></nav>
+    <div class="app-main">
+      <div class="app-header"><div><span class="chip chip-accent">Admin publishing</span><h1>Events & organizers</h1><p class="muted">Publish events, add organizer portraits and batch positions, and list volunteer opportunities.</p></div></div>
+      <div class="notice" data-dashboard-notice></div>
+      <form class="form-card" data-event-form>
+        <input type="hidden" name="id">
+        <h2 data-event-form-title>Create an event</h2>
+        <div class="form-grid">
+          <div class="field"><label for="event-title">Event title</label><input id="event-title" name="title" maxlength="180" required></div>
+          <div class="field"><label for="event-type">Event type</label><input id="event-type" name="event_type" maxlength="80" placeholder="Workshop, meetup, conference"></div>
+          <div class="field"><label for="event-date">Date and time</label><input id="event-date" name="event_date" type="datetime-local"></div>
+          <div class="field"><label for="event-venue">Venue</label><input id="event-venue" name="venue" maxlength="180"></div>
+          <div class="field"><label for="event-status">Visibility</label><select id="event-status" name="status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></div>
+          <div class="field"><label for="event-image">Event cover image</label><input id="event-image" name="image" type="file" accept="image/jpeg,image/png,image/webp"><span class="help" data-event-image-current></span></div>
+          <div class="field full"><label for="event-description">Description</label><textarea id="event-description" name="description" maxlength="10000" rows="5"></textarea></div>
+        </div>
+        <div class="toolbar"><button class="btn btn-primary" type="submit">Save event</button><button class="btn btn-secondary" type="button" data-event-reset>Clear form</button></div>
+      </form>
+      <h2>Events</h2>
+      <div class="table-card"><div class="table-wrap"><table><thead><tr><th>Event</th><th>Date</th><th>Status</th><th>Manage</th></tr></thead><tbody data-events-table><tr><td colspan="4" class="muted">Loading events…</td></tr></tbody></table></div></div>
+      <section data-event-people hidden>
+        <div class="app-header"><div><span class="chip">Event team</span><h2 data-selected-event-title>Organizers & volunteers</h2></div></div>
+        <div class="grid-2">
+          <form class="form-card" data-organizer-form>
+            <input type="hidden" name="id"><input type="hidden" name="event_id">
+            <h3 data-organizer-form-title>Add an organizer</h3>
+            <div class="field"><label for="organizer-name">Organizer name</label><input id="organizer-name" name="full_name" maxlength="160" required></div>
+            <div class="field"><label for="organizer-image">Organizer image</label><input id="organizer-image" name="image" type="file" accept="image/jpeg,image/png,image/webp"></div>
+            <div class="field"><label for="organizer-batch">Current batch</label><select id="organizer-batch" name="batch_id"><option value="">Select batch</option></select></div>
+            <div class="field"><label for="organizer-batch-position">Position held in this batch</label><input id="organizer-batch-position" name="batch_position" maxlength="120" placeholder="Batch lead, team leader…" required></div>
+            <div class="field"><label for="organizer-volunteer-position">Event volunteer position</label><input id="organizer-volunteer-position" name="volunteer_position" maxlength="120" placeholder="Event coordinator, host…"></div>
+            <div class="toolbar"><button class="btn btn-primary" type="submit">Save organizer</button><button class="btn btn-secondary" type="button" data-organizer-reset>Clear</button></div>
+          </form>
+          <form class="form-card" data-volunteer-form>
+            <input type="hidden" name="id"><input type="hidden" name="event_id">
+            <h3>Add a volunteer opportunity</h3>
+            <div class="field"><label for="volunteer-title">Position title</label><input id="volunteer-title" name="title" maxlength="140" required></div>
+            <div class="field"><label for="volunteer-description">Description</label><textarea id="volunteer-description" name="description" maxlength="3000" rows="3"></textarea></div>
+            <div class="form-grid"><div class="field"><label for="volunteer-slots">Open slots</label><input id="volunteer-slots" name="slots" type="number" min="1" max="1000" value="1" required></div><div class="field"><label for="volunteer-status">Status</label><select id="volunteer-status" name="status"><option value="open">Open</option><option value="closed">Closed</option></select></div></div>
+            <button class="btn btn-primary" type="submit">Save volunteer position</button>
+          </form>
+        </div>
+        <h3>Organizers</h3><div class="table-card"><div class="table-wrap"><table><thead><tr><th>Name</th><th>Batch position</th><th>Volunteer role</th><th>Manage</th></tr></thead><tbody data-organizers-table><tr><td colspan="4" class="muted">Select an event to manage its team.</td></tr></tbody></table></div></div>
+        <h3>Volunteer positions</h3><div class="table-card"><div class="table-wrap"><table><thead><tr><th>Position</th><th>Slots</th><th>Status</th><th>Manage</th></tr></thead><tbody data-volunteers-table><tr><td colspan="4" class="muted">Select an event to manage its volunteer opportunities.</td></tr></tbody></table></div></div>
+      </section>
+    </div>
+  </div></main>
+  <div data-mount="footer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="../assets/js/config.js"></script><script src="../assets/js/supabase-client.js"></script><script src="../assets/js/clean-links.js"></script><script src="../assets/js/guard.js"></script><script src="../assets/js/admin-modules.js"></script><script src="../assets/js/admin-media.js"></script><script src="../assets/js/admin-events.js"></script><script src="../assets/js/app.js"></script>
+</body>
+</html>
