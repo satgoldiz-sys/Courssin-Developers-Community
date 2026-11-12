@@ -1,3 +1,7 @@
+﻿[auth]
+site_url = "https://ccd-gilt.vercel.app"
+additional_redirect_urls = ["https://ccd-gilt.vercel.app/**"]
+
 # Login happens before a user has a Supabase session. This function validates the
 # supplied credentials with Supabase Auth and enforces the server-side lockout.
 [functions.login-lockout]

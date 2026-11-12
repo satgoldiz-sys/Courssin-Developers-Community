@@ -1,5 +1,7 @@
 window.CCD_CONFIG = {
   appName: "Community of Courssin Developers",
+  siteUrl: "https://ccd-gilt.vercel.app",
+  environment: "production",
   tagline: "BUILD • LEARN • INNOVATE • GROW",
   // Set your public Supabase project values here (NEVER service-role key).
   supabaseUrl: "https://etfhkyomhxxfeagpwtlr.supabase.co",

@@ -26,5 +26,5 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', load);
+  CCD.onReady(load);
 })();

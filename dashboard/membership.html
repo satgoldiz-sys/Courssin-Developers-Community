@@ -6,6 +6,7 @@
 <body data-base="../" data-require-auth="true"><div data-mount="header"></div>
 <main id="main" class="app-shell"><div class="app-layout"><nav class="sidebar" aria-label="Dashboard"><h5>Member</h5><a href="index">Overview</a><a href="profile">My Profile</a><a href="membership">My Membership</a><a href="team">My Team</a><a href="tasks">My Tasks</a><a href="projects">Projects</a><a href="discussions">Discussions</a><a href="achievements">Achievements</a><a href="rewards">Rewards</a><a href="notifications">Notifications</a><a href="../admin/index">Admin</a><a href="#" data-signout>Sign out</a></nav>
 <div class="app-main"><div class="app-header"><div><span class="chip chip-accent">Stage 2</span><h1>Membership registration</h1><p class="muted">Select an open batch and complete your CCD membership application.</p></div></div>
+<section class="membership-status-panel"><div class="section-heading"><div><h2>Your applications</h2><p class="muted">After approval, your private batch WhatsApp invite is available here and in notifications.</p></div><a class="btn btn-secondary btn-sm" href="notifications">Open notifications</a></div><div data-membership-status><p class="muted">Loading your membership status…</p></div></section>
 <form class="form-card" data-membership-form style="max-width:none;margin:0"><div class="notice" data-notice></div>
 <div class="form-grid">
   <div class="field full"><label>Open batch</label><select name="batch_id" required><option>Loading...</option></select></div>
@@ -18,7 +19,7 @@
   <div class="field"><label>Available for group projects/activities?</label><select name="availability"><option value="yes">Yes</option><option value="limited">Limited</option><option value="no">No</option></select></div>
   <div class="field full"><label><input type="checkbox" name="terms" required style="width:auto;min-height:auto;margin-right:8px">I accept the CCD community rules and terms.</label></div>
 </div><button class="btn btn-primary" type="submit">Submit registration</button>
-<div id="waResult" class="notice success reveal" style="margin-top:16px">Registration submitted. A confirmation email and WhatsApp instruction are sent by the configured Edge Function (Resend). If email is not configured, administrators can still review your registration in Supabase.</div>
+<div id="waResult" class="notice success reveal" style="margin-top:16px"></div>
 </form>
 </div></div></main><div data-mount="footer"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>

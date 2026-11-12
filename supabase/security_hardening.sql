@@ -302,6 +302,44 @@ drop policy if exists ccd_public_media_admin_delete on storage.objects;
 create policy ccd_public_media_admin_delete on storage.objects for delete to authenticated
   using (bucket_id = 'ccd-public-media' and public.is_admin());
 
+-- Profile photos are publicly viewable, but authenticated users can only manage
+-- objects stored under their own auth user ID folder.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('ccd-avatars', 'ccd-avatars', true, 5242880, array['image/jpeg','image/png','image/webp'])
+on conflict (id) do update set public = true, file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+drop policy if exists ccd_avatars_public_read on storage.objects;
+create policy ccd_avatars_public_read on storage.objects for select to anon, authenticated
+  using (bucket_id = 'ccd-avatars');
+drop policy if exists ccd_avatars_owner_insert on storage.objects;
+create policy ccd_avatars_owner_insert on storage.objects for insert to authenticated
+  with check (bucket_id = 'ccd-avatars' and (storage.foldername(name))[1] = (select auth.uid())::text);
+drop policy if exists ccd_avatars_insert_guard on storage.objects;
+create policy ccd_avatars_insert_guard on storage.objects as restrictive for insert to anon, authenticated
+  with check (bucket_id <> 'ccd-avatars' or (
+    auth.role() = 'authenticated' and (storage.foldername(name))[1] = (select auth.uid())::text
+  ));
+drop policy if exists ccd_avatars_owner_update on storage.objects;
+create policy ccd_avatars_owner_update on storage.objects for update to authenticated
+  using (bucket_id = 'ccd-avatars' and (storage.foldername(name))[1] = (select auth.uid())::text)
+  with check (bucket_id = 'ccd-avatars' and (storage.foldername(name))[1] = (select auth.uid())::text);
+drop policy if exists ccd_avatars_update_guard on storage.objects;
+create policy ccd_avatars_update_guard on storage.objects as restrictive for update to anon, authenticated
+  using (bucket_id <> 'ccd-avatars' or (
+    auth.role() = 'authenticated' and (storage.foldername(name))[1] = (select auth.uid())::text
+  ))
+  with check (bucket_id <> 'ccd-avatars' or (
+    auth.role() = 'authenticated' and (storage.foldername(name))[1] = (select auth.uid())::text
+  ));
+drop policy if exists ccd_avatars_owner_delete on storage.objects;
+create policy ccd_avatars_owner_delete on storage.objects for delete to authenticated
+  using (bucket_id = 'ccd-avatars' and (storage.foldername(name))[1] = (select auth.uid())::text);
+drop policy if exists ccd_avatars_delete_guard on storage.objects;
+create policy ccd_avatars_delete_guard on storage.objects as restrictive for delete to anon, authenticated
+  using (bucket_id <> 'ccd-avatars' or (
+    auth.role() = 'authenticated' and (storage.foldername(name))[1] = (select auth.uid())::text
+  ));
+
 -- Avoid stale publication dates and supply a minimal media display index.
 create index if not exists articles_published_idx on public.articles (published_at desc) where status = 'published';
 create index if not exists events_published_idx on public.events (event_date) where status = 'published';

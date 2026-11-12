@@ -8,6 +8,11 @@
     return false;
   }
 
+  function productionUrl(path) {
+    const siteUrl = (window.CCD_CONFIG?.siteUrl || location.origin).replace(/\/+$/, '');
+    return `${siteUrl}/${String(path).replace(/^\/+/, '')}`;
+  }
+
   async function explainFunctionError(error) {
     const context = error && error.context;
     let body = null;
@@ -24,16 +29,31 @@
     return error && error.message ? error.message : 'Sign-in failed. Please try again.';
   }
 
-  async function signInWithGoogle(notice) {
+  async function signInWithGoogle(notice, adminPortal = false) {
     if (!ensureConfigured(notice)) return;
     const sb = CCD.getSupabase();
-    const redirectTo = location.origin + location.pathname.replace(/\/[^/]*$/, '') + '/' + CCD.getBase() + 'dashboard';
+    const redirectTo = productionUrl(adminPortal ? 'admin' : 'auth-redirect');
     CCD.setNotice(notice, 'Redirecting to Google...', '');
     const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
     if (error) CCD.setNotice(notice, error.message, 'error');
   }
 
-  async function handleLogin(form) {
+  async function finishLogin(sb, userId, adminPortal, notice) {
+    const { data: profile, error } = await sb.from('profiles').select('role').eq('id', userId).maybeSingle();
+    if (error || !profile) {
+      CCD.setNotice(notice, 'Your account was authenticated, but its CCD role could not be verified. Please try again.', 'error');
+      return;
+    }
+    const isAdmin = ['super_admin', 'administrator'].includes(profile.role);
+    if (adminPortal && !isAdmin) {
+      await sb.auth.signOut();
+      CCD.setNotice(notice, 'This account does not have administrator access. Use the member login instead.', 'error');
+      return;
+    }
+    location.assign(productionUrl(isAdmin ? 'admin' : 'dashboard'));
+  }
+
+  async function handleLogin(form, adminPortal = false) {
     const notice = form.querySelector('[data-notice]');
     const lockoutNotice = document.getElementById('lockoutNotice');
     form.addEventListener('submit', async (e) => {
@@ -69,7 +89,7 @@
             refresh_token: data.refresh_token
           });
           if (setErr) CCD.setNotice(notice, setErr.message, 'error');
-          else location.href = CCD.getBase() + 'dashboard';
+          else await finishLogin(sb, data.user?.id, adminPortal, notice);
           return;
         }
         CCD.setNotice(notice, 'The sign-in service returned an unexpected response. Please try again.', 'error');
@@ -80,7 +100,7 @@
       }
     });
     const g = form.querySelector('[data-google]');
-    if (g) g.addEventListener('click', () => signInWithGoogle(notice));
+    if (g) g.addEventListener('click', () => signInWithGoogle(notice, adminPortal));
   }
 
   async function handleRegister(form) {
@@ -96,7 +116,7 @@
       if (password.length < 8) return CCD.setNotice(notice, 'Password must be at least 8 characters.', 'error');
       const sb = CCD.getSupabase();
       CCD.setNotice(notice, 'Creating your account...', '');
-      const redirectTo = location.origin + location.pathname.replace(/\/[^/]*$/, '') + '/' + CCD.getBase() + 'login.html';
+      const redirectTo = productionUrl('login');
       const { data, error } = await sb.auth.signUp({
         email, password,
         options: { data: { full_name: fullName }, emailRedirectTo: redirectTo }
@@ -106,7 +126,7 @@
         CCD.setNotice(notice, 'Account created. Check your email to verify your address, then log in to complete membership registration.', 'success');
         form.reset();
       } else if (data && data.session) {
-        location.href = CCD.getBase() + 'dashboard';
+        location.href = productionUrl('dashboard');
       }
     });
     const g = form.querySelector('[data-google]');
@@ -125,8 +145,21 @@
     if (!window.CCD) return;
     mountGoogleButtons();
     const login = document.querySelector('[data-auth="login"]');
+    const adminLogin = document.querySelector('[data-auth="admin-login"]');
     const register = document.querySelector('[data-auth="register"]');
     if (login) handleLogin(login);
+    if (adminLogin) {
+      handleLogin(adminLogin, true);
+      const sb = CCD.getSupabase();
+      if (sb) sb.auth.getSession().then(async ({ data: { session } }) => {
+        if (!session) return;
+        const { data: profile, error } = await sb.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+        if (!error && profile) {
+          const isAdmin = ['super_admin', 'administrator'].includes(profile.role);
+          location.replace(CCD.getBase() + (isAdmin ? 'admin' : 'dashboard'));
+        }
+      });
+    }
     if (register) handleRegister(register);
   });
 })();

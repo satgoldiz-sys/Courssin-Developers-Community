@@ -8,10 +8,10 @@
 <div class="app-main"><div class="app-header"><div><span class="chip chip-accent">Administrator</span><h1>Admin overview</h1><p class="muted">Manage members, batches, teams, tasks, events, rewards, and communications. Permissions are enforced by Supabase RLS and roles.</p></div></div>
 <div class="notice" data-dashboard-notice></div>
 <div class="stat-grid">
-  <div class="stat-card"><div class="label">Profiles</div><div class="value" id="mMembers">, </div></div>
-  <div class="stat-card"><div class="label">Memberships</div><div class="value" id="mMemberships">, </div></div>
-  <div class="stat-card"><div class="label">Batches</div><div class="value" id="mBatches">, </div></div>
-  <div class="stat-card"><div class="label">Tasks</div><div class="value" id="mTasks">, </div></div>
+  <a class="dashboard-stat-link" href="members"><div class="stat-card"><div class="label">Profiles</div><div class="value" id="mMembers">, </div><span class="dashboard-card-hint">Manage members</span></div></a>
+  <a class="dashboard-stat-link" href="members#approvals"><div class="stat-card"><div class="label">Memberships</div><div class="value" id="mMemberships">, </div><span class="dashboard-card-hint">Review applications</span></div></a>
+  <a class="dashboard-stat-link" href="batches"><div class="stat-card"><div class="label">Batches</div><div class="value" id="mBatches">, </div><span class="dashboard-card-hint">Manage batches</span></div></a>
+  <a class="dashboard-stat-link" href="tasks"><div class="stat-card"><div class="label">Tasks</div><div class="value" id="mTasks">, </div><span class="dashboard-card-hint">Open task manager</span></div></a>
 </div>
 <div class="grid-2"><article class="card"><h3>Batch management</h3><p>Create batches, set registration windows, open/close registration, and manage WhatsApp links in the database (never expose service keys in frontend).</p><a class="btn btn-primary" href="batches">Manage batches</a></article>
 <article class="card"><h3>Operations</h3><p>Use Supabase Table Editor/SQL for advanced admin operations until every module UI is extended. RLS and Edge Functions protect sensitive flows.</p><a class="btn btn-secondary" href="members">View members</a></article></div>

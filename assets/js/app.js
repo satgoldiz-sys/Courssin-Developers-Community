@@ -41,9 +41,15 @@
           </div>
           <nav id="main-nav" class="nav-links" aria-label="Main navigation">${navLinks(base)}</nav>
           <div class="nav-actions">
-            <a class="btn btn-ghost" href="${base}login.html">Log in</a>
+            <a class="btn btn-ghost" data-header-login href="${base}login.html">Log in</a>
             <button class="btn btn-ghost theme-toggle theme-toggle-desktop" type="button" data-theme-toggle aria-label="Toggle dark mode"></button>
-            <a class="btn btn-primary" href="${base}register.html">Sign up</a>
+            <a class="btn btn-primary" data-header-signup href="${base}register.html">Sign up</a>
+            <a class="dashboard-notification-link" data-header-notifications href="${base}dashboard/notifications" aria-label="Notifications" title="Notifications" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+              <span class="notification-badge" data-header-unread hidden></span>
+            </a>
+            <a class="btn btn-ghost" data-header-account href="${base}dashboard/account" hidden>Account settings</a>
+            <a class="btn btn-primary" data-header-dashboard href="${base}dashboard" hidden>Dashboard</a>
           </div>
         </div>
       </header>`;
@@ -95,6 +101,7 @@
               <a href="${base}contact.html">Contact</a>
               <span>${BRAND.tagline}</span>
             </span>
+            <span class="powered-by">Powered by <strong>SatGold Technol</strong></span>
           </div>
         </div>
       </footer>`;
@@ -108,7 +115,7 @@ function setActiveLinks() {
     const current = normalize(location.pathname);
     document.querySelectorAll('.nav-links a, .sidebar a, .footer-col a, .footer-links a').forEach((a) => {
       const href = a.getAttribute('href') || '';
-      if (!href || href === '#' || /^(https?:|mailto:|tel:|javascript:)/i.test(href)) return;
+      if (!href || href === '#' || href.startsWith('#') || /^(https?:|mailto:|tel:|javascript:)/i.test(href)) return;
       const target = normalize(new URL(href, location.href).pathname);
       if (target === current || (current === '/' && target === '/index')) a.setAttribute('aria-current', 'page');
     });
@@ -123,6 +130,185 @@ function setActiveLinks() {
     group.style.display = 'contents';
     group.innerHTML = '<a href="/admin/events">Events</a><a href="/admin/content">Articles &amp; Media</a>';
     nav.insertBefore(group, marker || null);
+  }
+
+  function mountAccountLinks() {
+    document.querySelectorAll('.sidebar[aria-label="Dashboard"], .sidebar[aria-label="Admin"]').forEach((nav) => {
+      if (nav.getAttribute('aria-label') === 'Dashboard') {
+        nav.querySelectorAll('a').forEach((link) => {
+          if (/\/admin\/(?:index|login)(?:\.html)?$/.test(link.getAttribute('href') || '')) {
+            link.remove();
+          }
+        });
+      }
+      if (nav.querySelector('[data-sidebar-account]')) return;
+      const link = document.createElement('a');
+      link.dataset.sidebarAccount = 'true';
+      link.href = nav.getAttribute('aria-label') === 'Admin' ? '/dashboard/account' : 'account';
+      link.textContent = 'Account settings';
+      const marker = nav.querySelector('[data-signout]');
+      nav.insertBefore(link, marker || null);
+    });
+  }
+
+  function normalizeWorkspaceLinks() {
+    const shell = document.querySelector('.app-shell');
+    const nav = shell && shell.querySelector('.sidebar');
+    if (!shell || !nav) return;
+    const area = nav.getAttribute('aria-label') === 'Admin' ? 'admin' : 'dashboard';
+    shell.querySelectorAll('a[href]').forEach((link) => {
+      const href = link.getAttribute('href') || '';
+      if (!href || href === '#' || href.startsWith('#') || /^(https?:|mailto:|tel:|javascript:)/i.test(href)) return;
+      if (href.startsWith('/')) return;
+      if (href.startsWith('../')) {
+        link.href = new URL(href, location.href).pathname + new URL(href, location.href).search + new URL(href, location.href).hash;
+        return;
+      }
+      const [path, ...hashParts] = href.split('#');
+      const normalizedPath = path.replace(/\.html$/i, '');
+      link.href = `/${area}/${normalizedPath}${hashParts.length ? `#${hashParts.join('#')}` : ''}`;
+    });
+  }
+
+  async function setupAuthenticatedHeader(base) {
+    const CCD = window.CCD;
+    if (!CCD || !CCD.isConfigured()) return;
+    const sb = CCD.getSupabase();
+    if (!sb) return;
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
+
+    const login = document.querySelector('[data-header-login]');
+    const signup = document.querySelector('[data-header-signup]');
+    const notification = document.querySelector('[data-header-notifications]');
+    const account = document.querySelector('[data-header-account]');
+    const dashboard = document.querySelector('[data-header-dashboard]');
+    if (login) login.hidden = true;
+    if (signup) signup.hidden = true;
+    if (notification) notification.hidden = false;
+    if (account) account.hidden = false;
+    if (dashboard) dashboard.hidden = false;
+
+    const { data: profile } = await sb.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+    const admin = ['super_admin', 'administrator'].includes(profile?.role);
+    if (dashboard) {
+      dashboard.href = base + (admin ? 'admin' : 'dashboard');
+      dashboard.textContent = admin ? 'Admin dashboard' : 'Dashboard';
+    }
+    if (account) account.href = base + 'dashboard/account';
+    if (notification) notification.href = base + 'dashboard/notifications';
+
+    const { count } = await sb.from('notifications').select('id', { count: 'exact', head: true })
+      .eq('user_id', session.user.id).is('read_at', null);
+    const badge = document.querySelector('[data-header-unread]');
+    if (badge && count > 0) {
+      badge.textContent = count > 99 ? '99+' : String(count);
+      badge.hidden = false;
+      notification?.setAttribute('aria-label', `${count} unread notifications`);
+    }
+  }
+
+  function setupWorkspaceDrawer() {
+    const shell = document.querySelector('.app-shell');
+    const nav = shell && shell.querySelector('.sidebar');
+    const layout = shell && shell.querySelector('.app-layout');
+    if (!shell || !nav || !layout || nav.dataset.drawerReady) return;
+    nav.dataset.drawerReady = 'true';
+    nav.id = nav.id || 'workspaceSidebar';
+
+    const isAdmin = nav.getAttribute('aria-label') === 'Admin';
+    const drawerHead = document.createElement('div');
+    drawerHead.className = 'sidebar-brand';
+    const base = document.body.dataset.base || '';
+    drawerHead.innerHTML = `<img class="sidebar-brand-mark" src="${base}assets/images/ccd-logo.svg" alt="CCD logo"><span class="sidebar-brand-copy"><strong>Courssin Developers</strong><small>${isAdmin ? 'Admin workspace' : 'Member dashboard'}</small></span>`;
+    const closeButton = document.createElement('button');
+    closeButton.type = 'button';
+    closeButton.className = 'sidebar-close';
+    closeButton.setAttribute('aria-label', 'Close dashboard menu');
+    closeButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>';
+    drawerHead.appendChild(closeButton);
+    nav.insertBefore(drawerHead, nav.firstChild);
+
+    const toolbar = document.createElement('div');
+    toolbar.className = 'dashboard-toolbar';
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'dashboard-menu-toggle';
+    toggle.setAttribute('aria-controls', nav.id);
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Dashboard menu</span>';
+    toolbar.appendChild(toggle);
+    layout.parentNode.insertBefore(toolbar, layout);
+
+    const backdrop = document.createElement('button');
+    backdrop.type = 'button';
+    backdrop.className = 'dashboard-drawer-backdrop';
+    backdrop.setAttribute('aria-label', 'Close dashboard menu');
+    backdrop.tabIndex = -1;
+    shell.appendChild(backdrop);
+    const desktop = window.matchMedia('(min-width: 992px)');
+    nav.inert = !desktop.matches;
+    nav.setAttribute('aria-hidden', String(!desktop.matches));
+
+    function close(restoreFocus = false) {
+      document.body.classList.remove('dashboard-drawer-open');
+      nav.classList.remove('is-open');
+      nav.inert = !desktop.matches;
+      nav.setAttribute('aria-hidden', String(!desktop.matches));
+      toggle.setAttribute('aria-expanded', 'false');
+      backdrop.setAttribute('aria-hidden', 'true');
+      if (restoreFocus) toggle.focus();
+    }
+    function open() {
+      document.body.classList.add('dashboard-drawer-open');
+      nav.classList.add('is-open');
+      nav.inert = false;
+      nav.setAttribute('aria-hidden', 'false');
+      toggle.setAttribute('aria-expanded', 'true');
+      backdrop.setAttribute('aria-hidden', 'false');
+      closeButton.focus();
+    }
+
+    toggle.addEventListener('click', open);
+    closeButton.addEventListener('click', () => close(true));
+    backdrop.addEventListener('click', () => close(true));
+    nav.addEventListener('click', (event) => {
+      if (event.target.closest('a')) close(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && nav.classList.contains('is-open')) close(true);
+    });
+    desktop.addEventListener?.('change', (event) => {
+      if (event.matches) close(false);
+      else {
+        nav.inert = true;
+        nav.setAttribute('aria-hidden', 'true');
+      }
+    });
+  }
+
+  function setupSignOut() {
+    document.addEventListener('click', async (event) => {
+      const button = event.target.closest('[data-signout]');
+      if (!button) return;
+      event.preventDefault();
+      if (button.disabled) return;
+      button.disabled = true;
+      button.setAttribute('aria-busy', 'true');
+      try {
+        const sb = window.CCD && window.CCD.getSupabase();
+        if (!sb) throw new Error('Authentication is not available. Please reload and try again.');
+        const { error } = await sb.auth.signOut();
+        if (error) throw error;
+        location.assign((document.body.dataset.base || '') + 'login');
+      } catch (error) {
+        button.disabled = false;
+        button.removeAttribute('aria-busy');
+        const notice = document.querySelector('[data-dashboard-notice]');
+        if (notice && window.CCD) window.CCD.setNotice(notice, error.message || 'Could not sign out. Please try again.', 'error');
+        else console.error('CCD sign-out failed', error);
+      }
+    });
   }
 
   function setupNav() {
@@ -224,12 +410,13 @@ function setActiveLinks() {
   function sampleEvents() {
     const imgs = ['photos/meetup.jpg','photos/hackathon.jpg','photos/workshop.jpg','photos/cohort.jpg'];
     return [
-      { title: 'NextGen Developers Meetup', type: 'Meetup', date: 'Saturday, 26 December 2026', location: 'Zoom', image: imgs[0], desc: 'Kick off the holiday season by connecting with developers, designers, tech enthusiasts, and aspiring professionals from different backgrounds. Expect insightful discussions on emerging technologies, practical learning sessions, networking opportunities, and inspiration for your tech journey in the coming year.' },
-      { title: 'TechXperience 2027', type: 'Conference', date: 'Saturday, 30 January 2027', location: 'Venue to be announced soon', image: imgs[1], desc: 'Start the year with a high-impact physical tech experience featuring expert speakers, hands-on demonstrations, interactive sessions, career opportunities, and meaningful networking. Whether you are a beginner or an experienced professional, TechXperience 2027 is designed to help you learn, connect, and grow.' },
-      { title: 'Tech Talks & Networking', type: 'Talks', date: 'Saturday, 3 April 2027', location: 'Zoom', image: imgs[2], desc: 'Join an engaging virtual gathering where technology professionals, students, entrepreneurs, and innovators come together to share ideas, discuss industry trends, explore emerging technologies, and build valuable professional connections, all from anywhere in the world.' },
-      { title: 'TechFest 2027', type: 'Festival', date: 'Saturday, 31 July 2027', location: 'Venue to be announced soon', image: imgs[3], desc: 'Celebrate innovation at one of the year\'s biggest tech gatherings. TechFest 2027 will feature inspiring keynote sessions, product showcases, exhibitions, workshops, networking opportunities, and interactive experiences designed to bring together the technology community for a day of learning, collaboration, and innovation.' }
+      { key: 'nextgen-meetup', title: 'NextGen Developers Meetup', type: 'Meetup', date: 'Saturday, 26 December 2026', location: 'Zoom', image: imgs[0], desc: 'Kick off the holiday season by connecting with developers, designers, tech enthusiasts, and aspiring professionals from different backgrounds. Expect insightful discussions on emerging technologies, practical learning sessions, networking opportunities, and inspiration for your tech journey in the coming year.' },
+      { key: 'techxperience-2027', title: 'TechXperience 2027', type: 'Conference', date: 'Saturday, 30 January 2027', location: 'Venue to be announced soon', image: imgs[1], desc: 'Start the year with a high-impact physical tech experience featuring expert speakers, hands-on demonstrations, interactive sessions, career opportunities, and meaningful networking. Whether you are a beginner or an experienced professional, TechXperience 2027 is designed to help you learn, connect, and grow.' },
+      { key: 'tech-talks-networking', title: 'Tech Talks & Networking', type: 'Talks', date: 'Saturday, 3 April 2027', location: 'Zoom', image: imgs[2], desc: 'Join an engaging virtual gathering where technology professionals, students, entrepreneurs, and innovators come together to share ideas, discuss industry trends, explore emerging technologies, and build valuable professional connections, all from anywhere in the world.' },
+      { key: 'techfest-2027', title: 'TechFest 2027', type: 'Festival', date: 'Saturday, 31 July 2027', location: 'Venue to be announced soon', image: imgs[3], desc: 'Celebrate innovation at one of the year\'s biggest tech gatherings. TechFest 2027 will feature inspiring keynote sessions, product showcases, exhibitions, workshops, networking opportunities, and interactive experiences designed to bring together the technology community for a day of learning, collaboration, and innovation.' }
     ];
   }
+  window.CCD_SAMPLE_EVENTS = sampleEvents();
 
   function mountEvents() {
     document.querySelectorAll('[data-events]').forEach((root) => {
@@ -241,9 +428,10 @@ function setActiveLinks() {
           <img class="event-image" src="${base}assets/images/${ev.image}" alt="" loading="lazy">
           <div class="event-body">
             <span class="chip chip-accent">${ev.type}</span>
-            <h3>${ev.title}</h3>
+          <h3><a class="event-title-link" href="event.html?sample=${encodeURIComponent(ev.key)}">${ev.title}</a></h3>
             <p class="event-meta">${ev.date} · ${ev.location}</p>
             <p>${ev.desc}</p>
+          <a class="btn btn-secondary btn-sm event-details-link" href="event.html?sample=${encodeURIComponent(ev.key)}">View event details</a>
           </div>
         </article>`).join('');
     });
@@ -256,6 +444,11 @@ function setActiveLinks() {
     if (headerMount) headerMount.outerHTML = header(base);
     if (footerMount) footerMount.outerHTML = footer(base);
     mountAdminLinks();
+    mountAccountLinks();
+    normalizeWorkspaceLinks();
+    setupWorkspaceDrawer();
+    setupSignOut();
+    setupAuthenticatedHeader(base);
     setActiveLinks();
     setupNav();
     setupTheme();

@@ -24,12 +24,15 @@
   <div class="app-header"><div><span class="chip chip-accent">Member Dashboard</span><h1>Welcome, <span id="welcomeName">Member</span></h1><p class="muted">Your batch, tasks, projects, achievements, and notifications.</p></div><a class="btn btn-primary" href="membership">Register for a batch</a></div>
   <div class="notice" data-dashboard-notice></div>
   <div class="stat-grid">
-    <div class="stat-card"><div class="label">Current batch</div><div class="value" id="statBatch" style="font-size:1.2rem">, </div></div>
-    <div class="stat-card"><div class="label">Membership category</div><div class="value" id="statCategory" style="font-size:1.2rem">, </div></div>
-    <div class="stat-card"><div class="label">Tasks</div><div class="value" id="statTasks">, </div></div>
-    <div class="stat-card"><div class="label">Points</div><div class="value" id="statPoints">, </div></div>
+    <a class="dashboard-stat-link" href="membership"><div class="stat-card"><div class="label">Current batch</div><div class="value" id="statBatch" style="font-size:1.2rem">, </div><span class="dashboard-card-hint">View membership</span></div></a>
+    <a class="dashboard-stat-link" href="membership"><div class="stat-card"><div class="label">Membership category</div><div class="value" id="statCategory" style="font-size:1.2rem">, </div><span class="dashboard-card-hint">Manage application</span></div></a>
+    <a class="dashboard-stat-link" href="tasks"><div class="stat-card"><div class="label">Tasks</div><div class="value" id="statTasks">, </div><span class="dashboard-card-hint">Open my tasks</span></div></a>
+    <a class="dashboard-stat-link" href="rewards"><div class="stat-card"><div class="label">Points</div><div class="value" id="statPoints">, </div><span class="dashboard-card-hint">Explore rewards</span></div></a>
   </div>
-  <div class="table-card"><div class="table-wrap"><table id="tasksTable"><thead><tr><th>Task</th><th>Status</th><th>Due</th><th>Points</th></tr></thead><tbody><tr><td colspan="4" class="muted">Loading...</td></tr></tbody></table></div></div>
+  <div class="dashboard-overview-grid">
+    <section class="dashboard-overview-card"><div class="section-heading"><div><span class="chip chip-accent">Updates</span><h2>Notifications</h2><p class="muted">Your latest community activity.</p></div><a class="btn btn-secondary btn-sm" href="notifications">View all</a></div><div class="notification-preview-list" data-notification-preview><p class="muted">Loading notifications…</p></div></section>
+    <section class="dashboard-overview-card dashboard-tasks-preview"><div class="section-heading"><div><span class="chip">In progress</span><h2>My tasks</h2><p class="muted">Upcoming work from your team.</p></div><a class="btn btn-secondary btn-sm" href="tasks">View all</a></div><div class="table-card"><div class="table-wrap"><table id="tasksTable"><thead><tr><th>Task</th><th>Status</th><th>Due</th><th>Points</th></tr></thead><tbody><tr><td colspan="4" class="muted">Loading...</td></tr></tbody></table></div></div></section>
+  </div>
 </div></div></main>
 <div data-mount="footer"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>

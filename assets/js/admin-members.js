@@ -73,5 +73,5 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', () => { load(); loadApprovals(); });
+  CCD.onReady(() => { load(); loadApprovals(); });
 })();

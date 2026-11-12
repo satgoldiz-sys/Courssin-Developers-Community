@@ -30,9 +30,8 @@
     CCD.setNotice(notice, error?error.message:'Batch saved.', error?'error':'success');
     if (!error) { form.reset(); loadBatches(); }
   }
-  document.addEventListener('DOMContentLoaded', ()=>{
+  CCD.onReady(()=>{
     loadBatches();
     const f=document.querySelector('[data-batch-form]'); if(f) f.addEventListener('submit',e=>{e.preventDefault();saveBatch(f);});
-    document.querySelectorAll('[data-signout]').forEach(b=>b.addEventListener('click',async()=>{await sb.auth.signOut(); location.href=CCD.getBase()+'';}));
   });
 })();

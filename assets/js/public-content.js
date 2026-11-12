@@ -32,10 +32,11 @@
       return `<article class="card event-card">
         ${image ? `<img class="event-image" src="${esc(image)}" alt="" loading="lazy">` : ""}
         <div class="event-body"><span class="chip chip-accent">${esc(event.event_type || "CCD Event")}</span>
-          <h2>${esc(event.title)}</h2>
+          <h2><a class="event-title-link" href="event.html?id=${encodeURIComponent(event.id)}">${esc(event.title)}</a></h2>
           <p class="event-meta">${event.event_date ? esc(new Date(event.event_date).toLocaleString()) : "Date to be announced"}${event.venue ? ` · ${esc(event.venue)}` : ""}</p>
           <p>${esc(event.description || "")}</p>
           ${organizers ? `<div style="margin-top:16px"><strong>Organizers</strong>${organizers}</div>` : ""}${volunteerHtml}
+          <a class="btn btn-secondary btn-sm event-details-link" href="event.html?id=${encodeURIComponent(event.id)}">View event details</a>
         </div></article>`;
     }).join("");
   }

@@ -1,4 +1,4 @@
-import { createClient } from "npm:@supabase/supabase-js@2";
+﻿import { createClient } from "npm:@supabase/supabase-js@2";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || "";
@@ -6,9 +6,7 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "
 
 export function corsHeaders(req: Request): HeadersInit {
   const origin = req.headers.get("origin") || "";
-  const allowed = origin === "https://ccd-gilt.vercel.app" ||
-    /^https:\/\/ccd-gilt(?:-[a-z0-9-]+)?\.vercel\.app$/i.test(origin) ||
-    /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
+  const allowed = origin === "https://ccd-gilt.vercel.app";
   return {
     ...(allowed ? { "Access-Control-Allow-Origin": origin } : {}),
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",

@@ -6,9 +6,11 @@ Premium, responsive, GDG-inspired (layout patterns) technology community platfor
 
 ## Project Structure
 - `/` ,  Public pages (`index`, `about`, `membership`, `activities`, `projects`, `community`, `rewards`, `events`, `tech-cohort`, `contact`, `login`, `register`)
-- `/dashboard/` ,  Authenticated member dashboard (overview, profile, membership registration, team, tasks, projects, discussions, achievements, rewards, notifications)
-- `/admin/` ,  Admin dashboard (overview, members, batches, leadership, teams, tasks, projects, Tech Cohort, rewards)
+- `/dashboard/` ,  Authenticated member dashboard (overview, profile photo, account/password settings, membership registration/status, team, tasks, projects, discussions, achievements, rewards, notifications)
+- `/admin/login` ,  Direct administrator sign-in route; normal email and Google sign-ins automatically route administrator accounts to the admin workspace
+- `/admin/` ,  Admin dashboard (overview, members and approvals, batches, leadership, teams, tasks, projects, Tech Cohort, rewards, events, articles, and media)
 - `/admin/events` and `/admin/content` ,  Admin-only publishing for events, organizers, volunteer positions, articles, and media
+- `/events` and `/event?id=...` ,  Public event listing and published event details, including organizers and volunteer opportunities
 - `/articles` ,  Publicly readable published stories and media
 - `/assets/css/styles.css` ,  Global premium UI system (CCD colors)
 - `/assets/js/config.js` ,  **Public** config only (`supabaseUrl`, `supabaseAnonKey`). Never add service keys.
@@ -28,7 +30,8 @@ Premium, responsive, GDG-inspired (layout patterns) technology community platfor
 3. **Configure Auth:**
    - Enable Email auth (and email confirmations as desired).
    - Enable **Google provider** in Supabase Auth. Add OAuth client credentials from Google Cloud Console.
-   - Add redirect URLs: `http://localhost/*`, your Vercel URL, and `/dashboard/index.html`/`/login.html` as needed.
+   - Set the production Site URL to `https://ccd-gilt.vercel.app` and add `https://ccd-gilt.vercel.app/**` to the redirect URL allowlist. Remove localhost and preview deployment URLs from the production allowlist.
+   - Assign the initial `administrator` or `super_admin` role through a trusted project-owner operation. The public site does not provide an unauthenticated admin bootstrap flow.
 4. **Frontend config:** edit `assets/js/config.js` with your **public** Supabase project URL and publishable/anon key. These are intentionally browser-visible and must be protected by RLS. Never put a service-role/secret key in this file. The static frontend does not read `.env`.
 5. **Edge Functions (Resend/WhatsApp):**
    - Each function's `index.ts` is self-contained for individual deployment from the Supabase Dashboard editor; paste that function's full source without adding the `_shared` folder. Functions may also be deployed with the CLI from the project root.
@@ -36,6 +39,7 @@ Premium, responsive, GDG-inspired (layout patterns) technology community platfor
    - For Dashboard editor deployment, paste the complete `supabase/functions/login-lockout/index.ts` file. It is self-contained and does not need the sibling `_shared` folder. Turn **Verify JWT** off for `login-lockout` only; it handles pre-login requests and validates credentials with Supabase Auth. Keep JWT verification enabled on functions that require a signed-in user.
    - For CLI deployment, run `supabase functions deploy login-lockout` from the project root; `supabase/config.toml` carries the same function-specific JWT setting.
    - Apply `supabase/rls_hardening.sql` to add the `failed_attempts`, `last_failed_at`, and `lockout_until` columns used by this function. The migration file defines them, but this workspace cannot confirm whether they exist in the live database.
+   - Reapply `supabase/security_hardening.sql` after adding member profile photos; it creates the `ccd-avatars` bucket and owner-folder upload policies. Members receive their WhatsApp invite only after membership approval.
    - Store WhatsApp invite URLs in `batches.whatsapp_invite_url` (admin-only). Do **not** hardcode links in frontend.
 6. **Storage:** create buckets (e.g., avatars/submissions) and add RLS/storage policies.
 7. **Run locally:** `npx serve .` (or VS Code Live Server) and open the served URL. OAuth redirects require a real origin (not `file://`).
@@ -50,7 +54,7 @@ Premium, responsive, GDG-inspired (layout patterns) technology community platfor
 - `.env` is local-only and ignored by Git and Vercel. `.vercelignore` excludes environment files, Supabase SQL/function sources, and source maps from the static deployment.
 
 ## Deployment (Vercel)
-- Deploy as a static site. Set production Supabase Auth redirect URLs to your Vercel domain.
+- Deploy as a static production site at `https://ccd-gilt.vercel.app`. The public URL is configured in `assets/js/config.js` and `supabase/config.toml`; Supabase Auth Site URL and redirect allowlist must also be set in the Supabase Dashboard.
 - Keep service-role and mail secrets in Supabase Edge Function secrets. Do not add them to Vercel for this static architecture. The browser publishable key remains in `assets/js/config.js`.
 - Deploy Edge Functions separately with the Supabase CLI and apply the SQL migration after review. No build system or Vercel API functions are required.
 

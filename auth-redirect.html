@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Signing you in | CCD</title>
+  <meta name="description" content="Finishing your secure CCD sign-in.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body data-base="">
+  <div data-mount="header"></div>
+  <main id="main" class="auth-shell"><div class="container"><section class="auth-card auth-card-wide">
+    <div class="auth-header"><span class="chip chip-accent">Secure sign-in</span><h1>Preparing your CCD workspace</h1><p class="muted" data-auth-routing-status>Verifying your account and opening the correct dashboard…</p></div>
+    <div class="notice" data-auth-routing-notice role="status" aria-live="polite"></div>
+    <a class="btn btn-secondary" href="login" data-auth-retry hidden>Return to sign in</a>
+  </section></div></main>
+  <div data-mount="footer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="assets/js/config.js"></script><script src="assets/js/supabase-client.js"></script><script src="assets/js/clean-links.js"></script>
+  <script src="assets/js/auth-redirect.js"></script><script src="assets/js/app.js"></script>
+</body>
+</html>

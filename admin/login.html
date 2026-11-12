@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Sign In | CCD</title>
+  <meta name="description" content="Secure administrator sign in for the Courssin Developers Community.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body data-base="../" data-admin-login="true">
+  <div data-mount="header"></div>
+  <main id="main">
+    <section class="auth-shell">
+      <div class="container">
+        <div class="auth-card reveal admin-auth-card">
+          <div class="auth-header">
+            <span class="chip chip-accent">Administrator access</span>
+            <h1>CCD Admin Portal</h1>
+            <p>Sign in with an account assigned the administrator role to manage the community workspace.</p>
+          </div>
+          <form data-auth="admin-login" novalidate>
+            <div class="notice" data-notice aria-live="polite"></div>
+            <button class="btn btn-google" type="button" data-google data-label="Continue with Google"></button>
+            <div class="auth-divider">or use administrator email</div>
+            <div class="field"><label for="admin-email">Email address</label><input id="admin-email" name="email" type="email" autocomplete="username" required placeholder="admin@example.com"></div>
+            <div class="field"><label for="admin-password">Password</label><input id="admin-password" name="password" type="password" autocomplete="current-password" required placeholder="Enter your password"></div>
+            <button class="btn btn-primary btn-block" type="submit">Sign in to admin</button>
+          </form>
+          <div class="auth-footer">Looking for member access? <a href="../login">Member log in</a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div data-mount="footer"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="../assets/js/config.js"></script><script src="../assets/js/supabase-client.js"></script><script src="../assets/js/clean-links.js"></script>
+  <script src="../assets/js/auth.js"></script><script src="../assets/js/app.js"></script>
+</body>
+</html>

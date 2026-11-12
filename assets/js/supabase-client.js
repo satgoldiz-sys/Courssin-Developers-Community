@@ -6,7 +6,7 @@
     if (window.__ccdSupabase) return window.__ccdSupabase;
     if (!window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) return null;
     window.__ccdSupabase = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+      auth: { storage: window.localStorage, persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
     return window.__ccdSupabase;
   }
@@ -23,8 +23,14 @@
 
   function getBase() { return document.body.dataset.base || ''; }
 
+  function onReady(callback) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', callback, { once: true });
+    else callback();
+  }
+
   window.CCD.getSupabase = getSupabase;
   window.CCD.isConfigured = isConfigured;
   window.CCD.setNotice = setNotice;
   window.CCD.getBase = getBase;
+  window.CCD.onReady = onReady;
 })();
