@@ -66,25 +66,25 @@ function navLinks(base) {
             <div class="footer-col">
               <h5>Quick Links</h5>
               <ul>
-<li><a href="${base}about">About CCD</a></li>
-                <li><a href="${base}membership">Membership</a></li>
-                <li><a href="${base}events">Events</a></li>
-                <li><a href="${base}tech-cohort">Tech Cohort</a></li>
+<li><a href="${base}about.html">About CCD</a></li>
+                <li><a href="${base}membership.html">Membership</a></li>
+                <li><a href="${base}events.html">Events</a></li>
+                <li><a href="${base}tech-cohort.html">Tech Cohort</a></li>
               </ul>
             </div>
 <div class="footer-col">
               <h5>Community</h5>
               <ul>
-                <li><a href="${base}activities">Activities</a></li>
-                <li><a href="${base}projects">Projects</a></li>
+                <li><a href="${base}activities.html">Activities</a></li>
+                <li><a href="${base}projects.html">Projects</a></li>
               </ul>
             </div>
             <div class="footer-col">
               <h5>Account</h5>
               <ul>
-                <li><a href="${base}login">Log in</a></li>
-                <li><a href="${base}register">Sign up</a></li>
-                <li><a href="${base}contact">Contact</a></li>
+                <li><a href="${base}login.html">Log in</a></li>
+                <li><a href="${base}register.html">Sign up</a></li>
+                <li><a href="${base}contact.html">Contact</a></li>
               </ul>
             </div>
           </div>
@@ -93,8 +93,8 @@ function navLinks(base) {
           <div class="container footer-bottom-inner">
             <span>&copy; ${year} Community of Courssin Developers</span>
             <span class="footer-links">
-<a href="${base}about">About</a>
-              <a href="${base}contact">Contact</a>
+<a href="${base}about.html">About</a>
+              <a href="${base}contact.html">Contact</a>
               <span>${BRAND.tagline}</span>
             </span>
           </div>
