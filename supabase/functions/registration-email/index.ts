@@ -99,17 +99,20 @@ Deno.serve(async (req) => {
   let admin;
   try { admin = getAdminClient(); } catch { return respond(req, { error: "Server is not configured" }, 503); }
   const { data: membership, error: membershipError } = await admin.from("memberships")
-    .select("id,user_id,batch_id,category,status,batches(name,whatsapp_invite_url),profiles(full_name)")
+    .select("id,user_id,batch_id,category,status,batches(name,whatsapp_invite_url),profiles!memberships_user_id_fkey(full_name)")
     .eq("id", body.membership_id).eq("user_id", user.id).maybeSingle();
   if (membershipError || !membership) return respond(req, { error: "Membership not found" }, 404);
 
   const batchName = membership.batches?.name || "Your Batch";
   const memberName = membership.profiles?.full_name || "Member";
+  const approved = ["active", "verified", "approved"].includes(membership.status);
   const { error: notificationError } = await admin.from("notifications").insert({
     user_id: user.id,
-    type: "registration",
-    title: "Registration received",
-    body: `Your membership registration for batch "${batchName}" has been received and is awaiting review.`,
+    type: approved ? "approval" : "registration",
+    title: approved ? "Registration approved" : "Registration received",
+    body: approved
+      ? `Your registration for batch "${batchName}" has been approved automatically. Welcome to CCD!`
+      : `Your membership registration for batch "${batchName}" has been received and is awaiting review.`,
   });
   if (notificationError) return respond(req, { error: "Registration notification could not be created" }, 500);
 
@@ -126,7 +129,6 @@ Deno.serve(async (req) => {
     if (error) return respond(req, { error: "Admin notification could not be created" }, 500);
   }
 
-  const approved = ["active", "verified", "approved"].includes(membership.status);
   const inviteUrl = approved ? membership.batches?.whatsapp_invite_url || null : null;
   if (inviteUrl) {
     const { error } = await admin.from("notifications").insert({
@@ -136,14 +138,6 @@ Deno.serve(async (req) => {
       body: `Join your batch WhatsApp group: ${inviteUrl}`,
     });
     if (!error) await admin.from("memberships").update({ whatsapp_sent: true }).eq("id", membership.id).eq("user_id", user.id);
-  }
-  if (approved) {
-    await admin.from("notifications").insert({
-      user_id: user.id,
-      type: "approval",
-      title: "Registration approved",
-      body: `Your registration for batch "${batchName}" has been approved. Welcome to CCD!`,
-    });
   }
   return respond(req, { ok: true, status: membership.status, whatsapp_invite_url: inviteUrl });
 });

@@ -108,18 +108,29 @@ Deno.serve(async (req) => {
   let admin;
   try { admin = getAdminClient(); } catch { return respond(req, { error: "Server is not configured" }, 503); }
   const { data: membership, error: membershipError } = await admin.from("memberships")
-    .select("id,user_id,batch_id,category,status,batches(name,whatsapp_invite_url),profiles(full_name)")
+    .select("id,user_id,batch_id,category,status,batches(name,whatsapp_invite_url),profiles!memberships_user_id_fkey(full_name)")
     .eq("id", membershipId).maybeSingle();
   if (membershipError || !membership) return respond(req, { error: "Membership not found" }, 404);
   if (membership.status !== "pending") return respond(req, { error: "Only pending registrations can be reviewed" }, 409);
 
   const nextStatus = action === "approve" ? "active" : "rejected";
-  const { error: updateError } = await admin.from("memberships").update({
-    status: nextStatus,
-    approved_by: user.id,
-    approved_at: new Date().toISOString(),
-  }).eq("id", membership.id).eq("status", "pending");
-  if (updateError) return respond(req, { error: "Membership could not be updated" }, 500);
+  if (action === "approve") {
+    const { data: approval, error: approvalError } = await admin.rpc("approve_membership_with_capacity", {
+      p_membership_id: membership.id,
+      p_approved_by: user.id,
+    });
+    if (approvalError) return respond(req, { error: "Membership approval could not be completed" }, 500);
+    if (approval?.status === "full") return respond(req, { error: `This batch has reached its ${approval.capacity}-member capacity` }, 409);
+    if (approval?.status === "invite_missing") return respond(req, { error: "Add a WhatsApp invite to this batch before approving registrations" }, 409);
+    if (approval?.status !== "active") return respond(req, { error: "This registration is no longer pending" }, 409);
+  } else {
+    const { error: updateError } = await admin.from("memberships").update({
+      status: nextStatus,
+      approved_by: user.id,
+      approved_at: new Date().toISOString(),
+    }).eq("id", membership.id).eq("status", "pending");
+    if (updateError) return respond(req, { error: "Membership could not be updated" }, 500);
+  }
 
   const batchName = membership.batches?.name || "Your Batch";
   const memberName = membership.profiles?.full_name || "Member";

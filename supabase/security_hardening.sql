@@ -304,10 +304,6 @@ create policy ccd_public_media_admin_delete on storage.objects for delete to aut
 
 -- Profile photos are publicly viewable, but authenticated users can only manage
 -- objects stored under their own auth user ID folder.
-insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-values ('ccd-avatars', 'ccd-avatars', true, 5242880, array['image/jpeg','image/png','image/webp'])
-on conflict (id) do update set public = true, file_size_limit = excluded.file_size_limit,
-  allowed_mime_types = excluded.allowed_mime_types;
 drop policy if exists ccd_avatars_public_read on storage.objects;
 create policy ccd_avatars_public_read on storage.objects for select to anon, authenticated
   using (bucket_id = 'ccd-avatars');

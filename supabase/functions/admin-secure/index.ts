@@ -154,10 +154,11 @@ Deno.serve(async (req) => {
   const action = body?.action;
   const table = body?.table;
   const recordId = body?.record_id;
-  if (!body || typeof action !== "string" || typeof table !== "string" || !RULES[table]) {
+  const isMembersDataRequest = action === "members-data";
+  if (!body || typeof action !== "string" || (!isMembersDataRequest && (typeof table !== "string" || !RULES[table]))) {
     return respond(req, { error: "Invalid request" }, 400);
   }
-  if (!["insert", "update", "delete", "select"].includes(action)) return respond(req, { error: "Invalid action" }, 400);
+  if (!isMembersDataRequest && !["insert", "update", "delete", "select"].includes(action)) return respond(req, { error: "Invalid action" }, 400);
 
   const user = await getUser(req);
   if (!user) return respond(req, { error: "Unauthorized" }, 401);
@@ -167,6 +168,42 @@ Deno.serve(async (req) => {
   if (roleError || !caller || !["super_admin", "administrator"].includes(caller.role)) {
     return respond(req, { error: "Administrator access required" }, 403);
   }
+
+  if (isMembersDataRequest) {
+    const [profilesResult, pendingResult] = await Promise.all([
+      admin.from("profiles").select("id,full_name,email,role,created_at").order("created_at", { ascending: false }).limit(100),
+      admin.from("memberships").select("id,user_id,batch_id,status,created_at,category").eq("status", "pending").order("created_at", { ascending: false }).limit(50),
+    ]);
+    if (profilesResult.error) {
+      console.error("admin member list query failed", profilesResult.error.code);
+      return respond(req, { error: `Member list query failed: ${profilesResult.error.message}`, code: profilesResult.error.code }, 500);
+    }
+    if (pendingResult.error) {
+      console.error("admin registration list query failed", pendingResult.error.code);
+      return respond(req, { error: `Registration list query failed: ${pendingResult.error.message}`, code: pendingResult.error.code }, 500);
+    }
+    const pending = pendingResult.data || [];
+    const userIds = [...new Set(pending.map((row) => row.user_id))];
+    const batchIds = [...new Set(pending.map((row) => row.batch_id))];
+    const [applicantResult, batchResult] = await Promise.all([
+      userIds.length ? admin.from("profiles").select("id,full_name,email").in("id", userIds) : Promise.resolve({ data: [], error: null }),
+      batchIds.length ? admin.from("batches").select("id,name,year").in("id", batchIds) : Promise.resolve({ data: [], error: null }),
+    ]);
+    if (applicantResult.error || batchResult.error) {
+      const error = applicantResult.error || batchResult.error;
+      console.error("admin registration relations query failed", error?.code);
+      return respond(req, { error: `Registration details query failed: ${error?.message || "unknown database error"}`, code: error?.code }, 500);
+    }
+    const applicants = new Map((applicantResult.data || []).map((row) => [row.id, row]));
+    const batches = new Map((batchResult.data || []).map((row) => [row.id, row]));
+    return respond(req, {
+      ok: true,
+      profiles: profilesResult.data || [],
+      approvals: pending.map((row) => ({ ...row, profiles: applicants.get(row.user_id) || null, batches: batches.get(row.batch_id) || null })),
+    });
+  }
+
+  if (typeof table !== "string" || !RULES[table]) return respond(req, { error: "Invalid table" }, 400);
 
   const key = RULES[table].key;
   if (["update", "delete", "select"].includes(action) && !isUuid(recordId)) return respond(req, { error: "A valid record_id is required" }, 400);
@@ -184,6 +221,7 @@ Deno.serve(async (req) => {
   } else if (action === "update") {
     const payload = validatePayload(table, body.payload);
     if (!payload) return respond(req, { error: "Invalid fields or values" }, 400);
+    if (table === "memberships") return respond(req, { error: "Use the membership approval endpoint so batch capacity is enforced" }, 400);
     if (table === "profiles") {
       if (recordId === user.id) return respond(req, { error: "You cannot change your own administrator role" }, 403);
       if (payload.role === "super_admin" && caller.role !== "super_admin") return respond(req, { error: "Only a super administrator can grant that role" }, 403);

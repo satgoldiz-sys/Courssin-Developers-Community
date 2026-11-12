@@ -26,7 +26,7 @@ Premium, responsive, GDG-inspired (layout patterns) technology community platfor
 
 ## Setup (Required for Live Functionality)
 1. **Create a Supabase project.** In Supabase Dashboard: Authentication, Database, Storage, Edge Functions.
-2. **Run SQL:** execute `supabase/schema.sql`, then `supabase/policies.sql`, `supabase/rls_hardening.sql`, and `supabase/security_hardening.sql` in SQL Editor. On an existing project, apply the hardening scripts after reviewing them; do not rerun schema creation to replace existing data.
+2. **Run SQL:** execute `supabase/schema.sql`, then `supabase/policies.sql`, `supabase/rls_hardening.sql`, `supabase/security_hardening.sql`, and `supabase/auto_approve_memberships.sql` in SQL Editor. On an existing project, apply the hardening/migration scripts after reviewing them; do not rerun schema creation to replace existing data. The membership migration requires registration to go through the capacity-safe RPC and caps each batch at 500 members (or a lower configured batch capacity).
 3. **Configure Auth:**
    - Enable Email auth (and email confirmations as desired).
    - Enable **Google provider** in Supabase Auth. Add OAuth client credentials from Google Cloud Console.
@@ -39,9 +39,9 @@ Premium, responsive, GDG-inspired (layout patterns) technology community platfor
    - For Dashboard editor deployment, paste the complete `supabase/functions/login-lockout/index.ts` file. It is self-contained and does not need the sibling `_shared` folder. Turn **Verify JWT** off for `login-lockout` only; it handles pre-login requests and validates credentials with Supabase Auth. Keep JWT verification enabled on functions that require a signed-in user.
    - For CLI deployment, run `supabase functions deploy login-lockout` from the project root; `supabase/config.toml` carries the same function-specific JWT setting.
    - Apply `supabase/rls_hardening.sql` to add the `failed_attempts`, `last_failed_at`, and `lockout_until` columns used by this function. The migration file defines them, but this workspace cannot confirm whether they exist in the live database.
-   - Reapply `supabase/security_hardening.sql` after adding member profile photos; it creates the `ccd-avatars` bucket and owner-folder upload policies. Members receive their WhatsApp invite only after membership approval.
+   - Profile photos are resized in the browser and saved in the member profile, so avatar uploads do not require a Storage bucket. The membership migration auto-approves registrations while a batch has capacity and sends the WhatsApp invite in the member's Notifications and membership page. Student registration includes institution, country, type, and study year; the searchable [Hipo directory](https://github.com/Hipo/university-domains-list) lists most universities, with manual institution entry for schools missing from its dataset.
    - Store WhatsApp invite URLs in `batches.whatsapp_invite_url` (admin-only). Do **not** hardcode links in frontend.
-6. **Storage:** create buckets (e.g., avatars/submissions) and add RLS/storage policies.
+6. **Storage:** the public media publishing feature uses `ccd-public-media`; profile photos do not require a bucket.
 7. **Run locally:** `npx serve .` (or VS Code Live Server) and open the served URL. OAuth redirects require a real origin (not `file://`).
 8. **Admin content uploads:** the hardening SQL creates the `ccd-public-media` bucket. Public visitors can read published media; only administrators can upload or change files. The admin UI accepts JPG, PNG, WebP, MP4, MP3, and PDF files up to 10 MB.
 

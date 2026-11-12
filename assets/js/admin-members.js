@@ -7,6 +7,32 @@
   if (!session) return;
   const sb = A.sb();
   const base = CCD.getBase() || '';
+  let membersDataRequest;
+
+  async function getMembersData() {
+    if (!membersDataRequest) {
+      membersDataRequest = (async () => {
+        const { data, error } = await sb.functions.invoke('admin-secure', { body: { action: 'members-data' } });
+        if (error) {
+          let detail = error.message || 'Admin data service failed';
+          const response = error.context;
+          if (response && typeof response.clone === 'function') {
+            try {
+              const body = await response.clone().json();
+              if (typeof body?.error === 'string') detail = body.error;
+            } catch { /* retain the Edge Function error */ }
+          }
+          throw new Error(detail);
+        }
+        if (!data?.ok) throw new Error('Admin data service returned an invalid response');
+        return data;
+      })().catch(error => {
+        membersDataRequest = null;
+        throw error;
+      });
+    }
+    return membersDataRequest;
+  }
 
   async function invoke(fn, body) {
     const { data, error } = await sb.functions.invoke(fn, { body });
@@ -18,9 +44,8 @@
     const tbody = document.querySelector('#membersTable tbody');
     if (!tbody) return;
     try {
-      const { data, error } = await sb.from('profiles').select('id,full_name,email,role,created_at').order('created_at', { ascending: false }).limit(100);
-      if (error) throw error;
-      A.renderList(tbody, data, p => `
+      const { profiles } = await getMembersData();
+      A.renderList(tbody, profiles, p => `
         <tr>
           <td>${A.esc(p.full_name || 'Member')}</td>
           <td>${A.esc(p.email || ',')}</td>
@@ -33,11 +58,11 @@
         const role = prompt('Set role (super_admin, administrator, batch_lead, team_leader, reviewer_mentor, community_member, alumni):', '');
         if (!role) return;
         const res = await invoke('admin-secure', { action: 'update', table: 'profiles', record_id: id, payload: { role } });
-        if (res) load();
+        if (res) refreshMembers();
       }));
     } catch (e) {
       console.error('Could not load member list:', e);
-      tbody.innerHTML = A.emptyState('Could not load members. Check Supabase configuration and policies.');
+      tbody.innerHTML = A.emptyState(`Could not load members: ${e.message || 'unknown error'}`);
     }
   }
 
@@ -45,9 +70,8 @@
     const container = document.querySelector('[data-approvals]');
     if (!container) return;
     try {
-      const { data, error } = await sb.from('memberships').select('id,status,created_at,category,batches(name,year),profiles!memberships_user_id_fkey(full_name,email)').eq('status', 'pending').order('created_at', { ascending: false }).limit(50);
-      if (error) throw error;
-      container.innerHTML = (data || []).map(m => `
+      const { approvals } = await getMembersData();
+      container.innerHTML = (approvals || []).map(m => `
         <div class="card" style="margin-bottom:12px">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
             <div>
@@ -63,16 +87,21 @@
         </div>`).join('') || '<p class="muted">No pending registrations.</p>';
       container.querySelectorAll('[data-approve]').forEach(btn => btn.addEventListener('click', async () => {
         const res = await invoke('membership-approval', { membership_id: btn.dataset.approve, action: 'approve' });
-        if (res) { loadApprovals(); load(); }
+        if (res) refreshMembers();
       }));
       container.querySelectorAll('[data-reject]').forEach(btn => btn.addEventListener('click', async () => {
         const res = await invoke('membership-approval', { membership_id: btn.dataset.reject, action: 'reject' });
-        if (res) { loadApprovals(); load(); }
+        if (res) refreshMembers();
       }));
     } catch (e) {
       console.error('Could not load registration approvals:', e);
-      container.innerHTML = '<p class="muted">Could not load approvals. Check Supabase configuration and policies.</p>';
+      container.innerHTML = `<p class="muted">Could not load approvals: ${A.esc(e.message || 'unknown error')}</p>`;
     }
+  }
+
+  async function refreshMembers() {
+    membersDataRequest = null;
+    await Promise.all([load(), loadApprovals()]);
   }
 
   CCD.onReady(() => { load(); loadApprovals(); });

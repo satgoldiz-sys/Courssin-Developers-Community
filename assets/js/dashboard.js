@@ -58,7 +58,7 @@
     const host = document.querySelector('[data-membership-status]');
     if (!host) return;
     const { data, error } = await sb.from('memberships')
-      .select('id,batch_id,status,category,created_at,batches(name,year)')
+      .select('id,batch_id,status,category,employment_status,institution_type,institution_name,institution_country,study_year,created_at,batches(name,year)')
       .eq('user_id', user.id).order('created_at', { ascending: false }).limit(20);
     if (error) {
       host.innerHTML = '<p class="muted">Could not load membership status. Please reload or contact the CCD team.</p>';
@@ -80,7 +80,10 @@
       } else if (membership.status === 'pending') {
         inviteHtml = '<span class="help">Your group link will be available after an administrator approves this application.</span>';
       }
-      return `<article class="membership-status-card"><div><strong>${esc(batchName)}</strong><span class="status ${esc(membership.status)}">${esc(membership.status)}</span><small>Category: ${esc(membership.category || 'Member')}</small></div><div>${inviteHtml}</div></article>`;
+      const studyInfo = membership.employment_status === 'student'
+        ? `${membership.institution_name || ''}${membership.institution_country ? `, ${membership.institution_country}` : ''}${membership.study_year ? ` · ${membership.study_year}` : ''}`
+        : membership.employment_status || '';
+      return `<article class="membership-status-card"><div><strong>${esc(batchName)}</strong><span class="status ${esc(membership.status)}">${esc(membership.status)}</span><small>Category: ${esc(membership.category || 'Member')}</small>${studyInfo ? `<small>${esc(studyInfo)}</small>` : ''}</div><div>${inviteHtml}</div></article>`;
     }));
     host.innerHTML = cards.join('');
   }
@@ -94,13 +97,11 @@
       if (!['image/jpeg', 'image/png', 'image/webp'].includes(photo.type) || photo.size > 5 * 1024 * 1024) {
         return CCD.setNotice(notice, 'Choose a JPG, PNG, or WebP image up to 5 MB.', 'error');
       }
-      const extension = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[photo.type];
-      const path = `${user.id}/${crypto.randomUUID()}.${extension}`;
-      const { error: uploadError } = await sb.storage.from('ccd-avatars').upload(path, photo, {
-        contentType: photo.type, cacheControl: '3600', upsert: false
-      });
-      if (uploadError) return CCD.setNotice(notice, uploadError.message || 'Photo upload failed. Apply the avatar storage policies and try again.', 'error');
-      payload.avatar_url = sb.storage.from('ccd-avatars').getPublicUrl(path).data.publicUrl;
+      try {
+        payload.avatar_url = await compressAvatar(photo);
+      } catch {
+        return CCD.setNotice(notice, 'The selected image could not be processed. Try another JPG, PNG, or WebP image.', 'error');
+      }
     }
     CCD.setNotice(notice, 'Saving...', '');
     const { error } = await sb.from('profiles').update(payload).eq('id', user.id);
@@ -114,6 +115,41 @@
     }
   }
 
+  async function compressAvatar(file) {
+    const objectUrl = URL.createObjectURL(file);
+    try {
+      const image = new Image();
+      image.src = objectUrl;
+      await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = reject;
+      });
+      const maxDimension = 480;
+      const scale = Math.min(1, maxDimension / Math.max(image.naturalWidth, image.naturalHeight));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+      canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+      const context = canvas.getContext('2d');
+      if (!context) throw new Error('Canvas unavailable');
+      context.fillStyle = '#ffffff';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      let result = canvas.toDataURL('image/jpeg', 0.72);
+      if (result.length > 220_000) {
+        canvas.width = Math.max(1, Math.round(canvas.width * 0.7));
+        canvas.height = Math.max(1, Math.round(canvas.height * 0.7));
+        context.fillStyle = '#ffffff';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        result = canvas.toDataURL('image/jpeg', 0.58);
+      }
+      if (result.length > 220_000) throw new Error('Compressed image is too large');
+      return result;
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
+  }
+
   async function loadBatches(selectEl) {
     const { data } = await sb.from('batches').select('id,name,year,status,is_registration_open').order('year', { ascending: false }).order('name');
     if (!selectEl) return;
@@ -122,31 +158,135 @@
     if (!open.length) selectEl.innerHTML = '<option value="">No open batches right now</option>';
   }
 
+  let institutionCatalogPromise;
+  let institutionCatalogBound = false;
+  async function loadInstitutionCatalog(form) {
+    const countryList = form.querySelector('#institutionCountries');
+    const schoolList = form.querySelector('#institutionNames');
+    const status = form.querySelector('[data-institution-status]');
+    if (!countryList || !schoolList) return;
+    if (!institutionCatalogPromise) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 12_000);
+      institutionCatalogPromise = fetch('https://raw.githubusercontent.com/Hipo/university-domains-list/master/world_universities_and_domains.json', { signal: controller.signal })
+        .then(response => { if (!response.ok) throw new Error('Directory unavailable'); return response.json(); })
+        .then(rows => Array.isArray(rows) ? rows.filter(row => typeof row?.name === 'string' && typeof row?.country === 'string' && row.name && row.country) : [])
+        .catch(() => [])
+        .finally(() => clearTimeout(timeout));
+    }
+    if (status) status.textContent = 'Loading the institution directory… You can always type your school manually.';
+    const institutions = await institutionCatalogPromise;
+    if (!institutions.length) {
+      if (status) status.textContent = 'Directory unavailable right now. Enter your institution and country manually.';
+      return;
+    }
+    if (institutionCatalogBound) return;
+    institutionCatalogBound = true;
+    countryList.replaceChildren(...Array.from(new Set(institutions.map(row => row.country.trim()).filter(Boolean))).sort().map(country => {
+      const option = document.createElement('option');
+      option.value = country;
+      return option;
+    }));
+    const schoolInput = form.elements.institution_name;
+    const countryInput = form.elements.institution_country;
+    const refreshSchools = () => {
+      const query = schoolInput.value.trim().toLowerCase();
+      const country = countryInput.value.trim().toLowerCase();
+      schoolList.replaceChildren();
+      if (query.length < 2) return;
+      institutions.filter(row => row.name.toLowerCase().includes(query) && (!country || row.country.toLowerCase().includes(country)))
+        .slice(0, 60).forEach(row => {
+          const option = document.createElement('option');
+          option.value = row.name;
+          option.label = row.country;
+          schoolList.appendChild(option);
+        });
+    };
+    schoolInput.addEventListener('input', refreshSchools);
+    countryInput.addEventListener('input', refreshSchools);
+    if (status) status.textContent = 'Search by name; filter by country if you like. If your school is missing, enter it manually.';
+  }
+
+  function setupStudentRegistration(form) {
+    const statusSelect = form.elements.employment_status;
+    const studentFields = form.querySelector('[data-student-fields]');
+    if (!statusSelect || !studentFields) return;
+    const studentInputs = ['institution_type', 'institution_country', 'institution_name', 'study_year']
+      .map(name => form.elements[name]).filter(Boolean);
+    const update = () => {
+      const isStudent = statusSelect.value === 'student';
+      studentFields.hidden = !isStudent;
+      studentInputs.forEach(input => { input.required = isStudent; });
+      if (isStudent) loadInstitutionCatalog(form);
+    };
+    statusSelect.addEventListener('change', update);
+    update();
+  }
+
   async function submitMembership(form) {
     const notice = form.querySelector('[data-notice]');
     const batch_id = form.batch_id.value;
     if (!batch_id) return CCD.setNotice(notice, 'Select an open batch.', 'error');
-    const payload = {
-      user_id: user.id, batch_id,
-      category: form.category.value,
-      preferred_dev_category: form.preferred_dev_category?.value,
-      technologies: form.technologies?.value,
-      areas_of_interest: form.areas_of_interest?.value,
-      why_join: form.why_join?.value,
-      teamwork_experience: form.teamwork_experience?.value,
-      availability: form.availability?.value,
-      terms_accepted: !!form.terms?.checked
-    };
-    if (!payload.terms_accepted) return CCD.setNotice(notice, 'You must accept the community rules and terms.', 'error');
+    const accepted = !!form.terms?.checked;
+    if (!accepted) return CCD.setNotice(notice, 'You must accept the community rules and terms.', 'error');
     CCD.setNotice(notice, 'Submitting registration...', '');
-    const { data, error } = await sb.from('memberships').insert(payload).select('id').single();
-    if (error) return CCD.setNotice(notice, error.message.includes('duplicate') ? 'You are already registered for this batch.' : error.message, 'error');
-    const { error: notificationError } = await sb.functions.invoke('registration-email', { body: { membership_id: data.id } });
+    const { data: result, error } = await sb.rpc('register_batch_membership', {
+      p_batch_id: batch_id,
+      p_category: form.category.value,
+      p_preferred_dev_category: form.preferred_dev_category?.value || null,
+      p_technologies: form.technologies?.value || null,
+      p_areas_of_interest: form.areas_of_interest?.value || null,
+      p_why_join: form.why_join?.value || null,
+      p_teamwork_experience: form.teamwork_experience?.value || null,
+      p_availability: form.availability?.value || null,
+      p_terms_accepted: accepted,
+      p_employment_status: form.employment_status.value,
+      p_institution_type: form.employment_status.value === 'student' ? form.institution_type.value : null,
+      p_institution_name: form.employment_status.value === 'student' ? form.institution_name.value.trim() : null,
+      p_institution_country: form.employment_status.value === 'student' ? form.institution_country.value.trim() : null,
+      p_study_year: form.employment_status.value === 'student' ? form.study_year.value : null
+    });
+    if (error) {
+      const message = error.message || '';
+      const lowerMessage = message.toLowerCase();
+      const friendly = lowerMessage.includes('duplicate key') ? 'You are already registered for this batch.'
+        : lowerMessage.includes('whatsapp invite configured') ? 'This batch is not ready for registration yet. Please contact the CCD team.'
+        : lowerMessage.includes('registration is closed') ? 'Registration for this batch has closed.'
+        : lowerMessage.includes('register_batch_membership') || lowerMessage.includes('permission denied for function')
+          ? 'Automatic registration is not set up yet. Please contact the CCD team.' : message;
+      return CCD.setNotice(notice, friendly, 'error');
+    }
+    if (result?.status === 'full') {
+      CCD.setNotice(notice, `This batch has reached its ${result.capacity}-member capacity.`, 'error');
+      await loadBatches(form.batch_id);
+      return;
+    }
+    const membershipId = result?.membership_id;
+    if (!membershipId || result?.status !== 'active') {
+      return CCD.setNotice(notice, 'Registration could not be completed. Please try again or contact the CCD team.', 'error');
+    }
+    const { data: delivery, error: notificationError } = await sb.functions.invoke('registration-email', { body: { membership_id: membershipId } });
+    const inviteUrl = safeHttpsUrl(delivery?.whatsapp_invite_url || '');
     CCD.setNotice(notice, notificationError
-      ? 'Registration submitted. Your WhatsApp link will be available after approval; notification delivery may be delayed.'
-      : 'Registration submitted for review. Your WhatsApp link will appear after an administrator approves your membership.', 'success');
+      ? 'You are approved. Your group invite is available on this page and in Notifications if delivery succeeds.'
+      : 'You are approved and can join the batch WhatsApp group now.', notificationError ? 'error' : 'success');
     const wa = document.getElementById('waResult');
-    if (wa) { wa.textContent = 'Membership status and any approved WhatsApp invite are shown below and in Notifications.'; wa.classList.add('is-visible'); }
+    if (wa) {
+      wa.replaceChildren();
+      wa.classList.add('is-visible');
+      const message = document.createElement('p');
+      message.textContent = notificationError ? 'Your registration is active. Open Notifications or try refreshing to retrieve the group invite.' : 'Your registration is active.';
+      wa.appendChild(message);
+      if (inviteUrl) {
+        const link = document.createElement('a');
+        link.className = 'btn btn-primary btn-sm';
+        link.href = inviteUrl;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'Join WhatsApp group';
+        wa.appendChild(link);
+      }
+    }
     await loadMembershipState();
   }
 
@@ -158,7 +298,7 @@
     const pf = document.querySelector('[data-profile-form]');
     if (pf) pf.addEventListener('submit', e => { e.preventDefault(); saveProfile(pf); });
     const bf = document.querySelector('[data-membership-form]');
-    if (bf) { loadBatches(bf.batch_id); bf.addEventListener('submit', e => { e.preventDefault(); submitMembership(bf); }); }
+    if (bf) { setupStudentRegistration(bf); loadBatches(bf.batch_id); bf.addEventListener('submit', e => { e.preventDefault(); submitMembership(bf); }); }
     loadMembershipState();
     const profileForm = document.querySelector('[data-profile-form]');
     const avatarInput = profileForm?.elements.avatar;
