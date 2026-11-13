@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   const BRAND = {
     name: "Community of Courssin Developers",
     short: "CCD",
@@ -91,6 +91,18 @@
                 <li><a href="${base}contact.html">Contact</a></li>
               </ul>
             </div>
+            <div class="footer-col footer-policies">
+              <h5>Policies & Help</h5>
+              <ul>
+                <li><a href="${base}faq.html">FAQ</a></li>
+                <li><a href="${base}terms.html">Terms and Conditions</a></li>
+                <li><a href="${base}privacy.html">Privacy Policy</a></li>
+                <li><a href="${base}cookies.html">Cookie Policy</a></li>
+                <li><a href="${base}mentorship-policy.html">Mentorship Policy</a></li>
+                <li><a href="${base}open-source-policy.html">Open Source Policy</a></li>
+                <li><a href="${base}event-media-policy.html">Event Media Policy</a></li>
+              </ul>
+            </div>
           </div>
         </div>
         <div class="footer-bottom">
@@ -101,7 +113,7 @@
               <a href="${base}contact.html">Contact</a>
               <span>${BRAND.tagline}</span>
             </span>
-            <span class="powered-by">Powered by <strong>SatGold Technol</strong></span>
+              <span class="powered-by"><span class="powered-by-label">Brought to you by</span><span class="footer-credit-brand"><img src="${base}assets/images/courssin-tech-institute-logo.svg" alt="Courssin Tech Institute logo"><strong>Courssin Tech Institute</strong></span><span class="footer-credit-divider" aria-hidden="true">·</span><span class="footer-credit-brand"><img src="${base}assets/images/satgold-technol-logo.svg" alt="SatGold Technol logo"><strong>SatGold Technol</strong></span></span>
           </div>
         </div>
       </footer>`;
@@ -117,7 +129,7 @@ function setActiveLinks() {
       const href = a.getAttribute('href') || '';
       if (!href || href === '#' || href.startsWith('#') || /^(https?:|mailto:|tel:|javascript:)/i.test(href)) return;
       const target = normalize(new URL(href, location.href).pathname);
-      if (target === current || (current === '/' && target === '/index')) a.setAttribute('aria-current', 'page');
+    if (target === current || (current === '/' && target === '/index')) a.setAttribute('aria-current', 'page');
     });
   }
 
@@ -201,10 +213,15 @@ function setActiveLinks() {
     const { count } = await sb.from('notifications').select('id', { count: 'exact', head: true })
       .eq('user_id', session.user.id).is('read_at', null);
     const badge = document.querySelector('[data-header-unread]');
+    const workspaceBadge = document.querySelector('[data-workspace-unread]');
     if (badge && count > 0) {
       badge.textContent = count > 99 ? '99+' : String(count);
       badge.hidden = false;
       notification?.setAttribute('aria-label', `${count} unread notifications`);
+    }
+    if (workspaceBadge && count > 0) {
+      workspaceBadge.textContent = count > 99 ? '99+' : String(count);
+      workspaceBadge.hidden = false;
     }
   }
 
@@ -220,7 +237,7 @@ function setActiveLinks() {
     const drawerHead = document.createElement('div');
     drawerHead.className = 'sidebar-brand';
     const base = document.body.dataset.base || '';
-    drawerHead.innerHTML = `<img class="sidebar-brand-mark" src="${base}assets/images/ccd-logo.svg" alt="CCD logo"><span class="sidebar-brand-copy"><strong>Courssin Developers</strong><small>${isAdmin ? 'Admin workspace' : 'Member dashboard'}</small></span>`;
+    drawerHead.innerHTML = `<a class="sidebar-brand-home" href="${base}index.html" aria-label="Go to CCD homepage"><img class="sidebar-brand-mark" src="${base}assets/images/ccd-logo.svg" alt="CCD logo"></a><span class="sidebar-brand-copy"><strong>Courssin Developers</strong><small>${isAdmin ? 'Admin workspace' : 'Member dashboard'}</small></span>`;
     const closeButton = document.createElement('button');
     closeButton.type = 'button';
     closeButton.className = 'sidebar-close';
@@ -238,7 +255,20 @@ function setActiveLinks() {
     toggle.setAttribute('aria-expanded', 'false');
     toggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Dashboard menu</span>';
     toolbar.appendChild(toggle);
-    layout.parentNode.insertBefore(toolbar, layout);
+    const topbar = document.createElement('div');
+    topbar.className = 'workspace-topbar';
+    topbar.innerHTML = `<div class="workspace-topbar-left"><a class="workspace-home-link" href="${base}index.html" aria-label="Go to CCD homepage" title="CCD homepage"><img class="workspace-mobile-logo" src="${base}assets/images/ccd-logo.svg" alt="CCD homepage"></a><span class="workspace-mobile-brand">CCD Workspace</span><span class="workspace-topbar-label">${isAdmin ? 'Administration' : 'Member workspace'}</span><span class="workspace-topbar-separator">/</span><span class="workspace-topbar-current">${document.querySelector('.app-header h1')?.textContent?.trim() || 'Overview'}</span></div><div class="workspace-topbar-actions"><a class="workspace-icon-link workspace-apps-link" href="${base}${isAdmin ? 'admin' : 'dashboard'}" aria-label="Workspace overview" title="Workspace overview"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M17.5 14v7M14 17.5h7"/></svg></a><a class="workspace-icon-link workspace-notification-link" href="${base}dashboard/notifications" aria-label="Notifications" title="Notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="workspace-unread-badge" data-workspace-unread hidden></span></a><a class="workspace-icon-link workspace-profile-link" href="${base}dashboard/profile" aria-label="My profile" title="My profile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg><span class="workspace-online-dot" aria-hidden="true"></span></a></div>`;
+    topbar.prepend(toolbar);
+    const searchControl = document.createElement('div');
+    searchControl.className = 'workspace-search-control';
+    searchControl.innerHTML = '<button class="workspace-search-toggle" type="button" aria-label="Search dashboard pages" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg></button><input class="workspace-search-input" type="search" placeholder="Find a dashboard page" aria-label="Find a dashboard page" hidden>';
+    toolbar.after(searchControl);
+    const workspaceSearchInput = searchControl.querySelector('.workspace-search-input');
+    drawerHead.appendChild(workspaceSearchInput);
+    const appMain = shell.querySelector('.app-main');
+    const appHeader = appMain?.querySelector('.app-header');
+    appMain?.insertBefore(topbar, appHeader || appMain.firstChild);
+    document.body.classList.add('workspace-mode');
 
     const backdrop = document.createElement('button');
     backdrop.type = 'button';
@@ -270,6 +300,29 @@ function setActiveLinks() {
     }
 
     toggle.addEventListener('click', open);
+    const searchToggle = searchControl.querySelector('.workspace-search-toggle');
+    const searchInput = workspaceSearchInput;
+    searchToggle.addEventListener('click', () => {
+      const expanded = searchToggle.getAttribute('aria-expanded') === 'true';
+      searchToggle.setAttribute('aria-expanded', String(!expanded));
+      searchInput.hidden = expanded;
+      searchControl.classList.toggle('is-open', !expanded);
+      if (expanded) {
+        searchInput.value = '';
+        nav.querySelectorAll('a').forEach(link => { link.hidden = false; });
+        searchToggle.focus();
+        if (nav.classList.contains('is-open')) close(false);
+      } else {
+        if (!desktop.matches && !nav.classList.contains('is-open')) open();
+        searchInput.focus();
+      }
+    });
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim().toLowerCase();
+      nav.querySelectorAll('a').forEach(link => {
+        link.hidden = query.length > 0 && !link.textContent.toLowerCase().includes(query);
+      });
+    });
     closeButton.addEventListener('click', () => close(true));
     backdrop.addEventListener('click', () => close(true));
     nav.addEventListener('click', (event) => {
@@ -455,6 +508,10 @@ function setActiveLinks() {
     mountEvents();
     setupReveal();
     decorateCCD(document.body);
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+      const base = document.body.dataset.base || '';
+      navigator.serviceWorker.register(`${base}service-worker.js`, { scope: base || '/' }).catch(error => console.warn('CCD offline shell could not be registered', error));
+    }
   }
 
   document.addEventListener('DOMContentLoaded', mountLayout);

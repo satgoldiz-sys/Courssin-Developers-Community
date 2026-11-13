@@ -30,6 +30,11 @@
   }
 
   async function signInWithGoogle(notice, adminPortal = false) {
+    const registrationForm = document.querySelector('[data-auth="register"]');
+    if (registrationForm && !registrationForm.elements.acceptTerms?.checked) {
+      CCD.setNotice(notice, 'Please accept the Terms and Conditions and acknowledge the Privacy Policy before creating your account.', 'error');
+      return;
+    }
     if (!ensureConfigured(notice)) return;
     const sb = CCD.getSupabase();
     const redirectTo = productionUrl(adminPortal ? 'admin' : 'auth-redirect');
@@ -108,6 +113,7 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!ensureConfigured(notice)) return;
+      if (!form.elements.acceptTerms?.checked) return CCD.setNotice(notice, 'Please accept the Terms and Conditions and acknowledge the Privacy Policy.', 'error');
       const fullName = form.fullName.value.trim();
       const email = form.email.value.trim();
       const password = form.password.value;

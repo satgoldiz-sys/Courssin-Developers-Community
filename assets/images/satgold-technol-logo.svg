@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">SatGold Technol</title>
+  <rect width="512" height="512" rx="52" fill="#fff"/>
+  <circle cx="256" cy="256" r="228" fill="#003c36"/>
+  <path d="M132 179h59v100h-59zM245 179h162v100h-57v-42h-51v42h-54z" fill="#fa0755"/>
+  <circle cx="218" cy="207" r="14" fill="#08d7c6"/>
+  <circle cx="218" cy="250" r="14" fill="#08d7c6"/>
+  <path d="M135 290h276v25H135z" fill="#ffe53b"/>
+</svg>

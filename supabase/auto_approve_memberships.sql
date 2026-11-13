@@ -72,11 +72,7 @@ begin
   if v_batch.is_registration_open is not true then
     raise exception 'Batch registration is closed' using errcode = 'P0001';
   end if;
-  if nullif(trim(v_batch.whatsapp_invite_url), '') is null then
-    raise exception 'This batch does not have a WhatsApp invite configured yet' using errcode = 'P0001';
-  end if;
-
-  -- Administrators may configure a smaller batch capacity, but never more than 500.
+-- Administrators may configure a smaller batch capacity, but never more than 500.
   v_limit := least(500, greatest(0, coalesce(v_batch.capacity, 500)));
   select count(*)::integer into v_member_count
   from public.memberships m
@@ -157,11 +153,7 @@ begin
     return jsonb_build_object('status', 'not_pending');
   end if;
 
-  if nullif(trim(v_batch.whatsapp_invite_url), '') is null then
-    return jsonb_build_object('status', 'invite_missing');
-  end if;
-
-  v_limit := least(500, greatest(0, coalesce(v_batch.capacity, 500)));
+v_limit := least(500, greatest(0, coalesce(v_batch.capacity, 500)));
   select count(*)::integer into v_member_count
   from public.memberships m
   where m.batch_id = v_batch.id

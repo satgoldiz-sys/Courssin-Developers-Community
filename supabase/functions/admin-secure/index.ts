@@ -94,6 +94,9 @@ const RULES: Record<string, { key: string; fields: Record<string, FieldKind> }> 
   batches: { key: "id", fields: { name: "text", year: "number", start_date: "date", end_date: "date", registration_open_date: "date", registration_close_date: "date", whatsapp_invite_url: "url", capacity: "number", description: "longText", status: "status", is_registration_open: "boolean" } },
   teams: { key: "id", fields: { batch_id: "uuid", name: "text", leader_id: "uuid", objectives: "longText" } },
   tasks: { key: "id", fields: { batch_id: "uuid", team_id: "uuid", assigned_to: "uuid", title: "text", description: "longText", instructions: "longText", difficulty: "text", status: "status", start_date: "date", due_date: "date", points: "number", reference_materials: "longText", submission_requirements: "longText" } },
+  achievements: { key: "id", fields: { user_id: "uuid", title: "text", description: "longText", badge_key: "text" } },
+  points: { key: "id", fields: { user_id: "uuid", batch_id: "uuid", source_type: "text", source_id: "uuid", points: "number", reason: "longText" } },
+  reward_redemptions: { key: "id", fields: { reward_id: "uuid", user_id: "uuid", status: "status" } },
   projects: { key: "id", fields: { batch_id: "uuid", team_id: "uuid", leader_id: "uuid", title: "text", description: "longText", status: "status", deadline: "date", github_url: "url", live_url: "url" } },
   rewards: { key: "id", fields: { title: "text", description: "longText", points_required: "number", eligibility: "longText", available: "boolean" } },
   tech_cohorts: { key: "id", fields: { batch_id: "uuid", title: "text", theme: "text", event_date: "date", venue: "text", description: "longText", format: "text" } },
@@ -113,6 +116,7 @@ const statusValues: Record<string, Set<string>> = {
   tasks: new Set(["assigned", "in_progress", "submitted", "under_review", "revision_required", "approved", "completed"]),
   projects: new Set(["planning", "active", "completed", "archived", "on_hold"]),
   memberships: new Set(["pending", "verified", "active", "completed", "rejected", "withdrawn"]),
+  reward_redemptions: new Set(["pending", "approved", "rejected"]),
   articles: new Set(["draft", "published", "archived"]),
   media_assets: new Set(["draft", "published", "archived"]),
   events: new Set(["draft", "published", "archived"]),
@@ -214,6 +218,10 @@ Deno.serve(async (req) => {
     if (!payload) return respond(req, { error: "Invalid fields or values" }, 400);
     if (table === "profiles" || table === "memberships") return respond(req, { error: "This table cannot be inserted through this endpoint" }, 400);
     if (table === "articles") payload.author_id = user.id;
+    if (table === "achievements") payload.awarded_at = new Date().toISOString();
+    if (table === "points") payload.awarded_by = user.id;
+    if (table === "tasks") payload.created_by = user.id;
+    if (table === "reward_redemptions") { payload.reviewed_by = user.id; payload.reviewed_at = new Date().toISOString(); }
     if (table === "articles" && payload.status === "published") payload.published_at = new Date().toISOString();
     if (table === "media_assets") payload.uploaded_by = user.id;
     if (table === "events") payload.created_by = user.id;

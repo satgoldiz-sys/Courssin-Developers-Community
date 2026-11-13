@@ -51,7 +51,7 @@
           <td>${A.esc(p.email || ',')}</td>
           <td><span class="status ${A.statusClass(p.role)}">${A.esc(p.role)}</span></td>
           <td>${p.created_at ? new Date(p.created_at).toLocaleDateString() : ', '}</td>
-          <td><button class="btn btn-secondary btn-sm" data-edit="${p.id}">Edit role</button></td>
+          <td><div class="member-admin-actions"><button class="btn btn-secondary btn-sm" data-edit="${p.id}">Role</button><button class="btn btn-secondary btn-sm" data-badge="${p.id}">Badge</button><button class="btn btn-secondary btn-sm" data-points="${p.id}">Points</button><button class="btn btn-secondary btn-sm" data-task="${p.id}">Task</button><button class="btn btn-primary btn-sm" data-reward="${p.id}">Reward</button></div></td>
         </tr>`, A.emptyState('No members yet.'));
       tbody.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', async () => {
         const id = btn.dataset.edit;
@@ -59,6 +59,38 @@
         if (!role) return;
         const res = await invoke('admin-secure', { action: 'update', table: 'profiles', record_id: id, payload: { role } });
         if (res) refreshMembers();
+      }));
+      tbody.querySelectorAll('[data-badge]').forEach(btn => btn.addEventListener('click', async () => {
+        const title = prompt('Badge or contribution title (for example: Event Organiser or Project Lead):');
+        if (!title?.trim()) return;
+        const description = prompt('Short note shown with this badge (optional):', '') || '';
+        const res = await invoke('admin-secure', { action: 'insert', table: 'achievements', payload: { user_id: btn.dataset.badge, title: title.trim(), description, badge_key: title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') } });
+        if (res) A.setNotice(document.querySelector('[data-dashboard-notice]'), 'Badge added to the member profile.', 'success');
+      }));
+      tbody.querySelectorAll('[data-points]').forEach(btn => btn.addEventListener('click', async () => {
+        const amount = Number(prompt('Points to award (whole number):'));
+        if (!Number.isInteger(amount) || amount < 1 || amount > 10000) return;
+        const reason = prompt('Reason for this award:');
+        if (!reason?.trim()) return;
+        const res = await invoke('admin-secure', { action: 'insert', table: 'points', payload: { user_id: btn.dataset.points, points: amount, reason: reason.trim(), source_type: 'admin_award' } });
+        if (res) A.setNotice(document.querySelector('[data-dashboard-notice]'), 'Points awarded to the member.', 'success');
+      }));
+      tbody.querySelectorAll('[data-task]').forEach(btn => btn.addEventListener('click', async () => {
+        const title = prompt('Task title:');
+        if (!title?.trim()) return;
+        const description = prompt('Task instructions:') || '';
+        const res = await invoke('admin-secure', { action: 'insert', table: 'tasks', payload: { assigned_to: btn.dataset.task, title: title.trim(), description, status: 'assigned', points: 0 } });
+        if (res) A.setNotice(document.querySelector('[data-dashboard-notice]'), 'Task assigned to the member.', 'success');
+      }));
+      tbody.querySelectorAll('[data-reward]').forEach(btn => btn.addEventListener('click', async () => {
+        const { data: rewards, error } = await sb.from('rewards').select('id,title,available').eq('available', true).order('title').limit(100);
+        if (error || !rewards?.length) return A.setNotice(document.querySelector('[data-dashboard-notice]'), 'No available rewards were found.', 'error');
+        const choice = prompt(`Choose a reward by number:\n${rewards.map((reward, index) => `${index + 1}. ${reward.title}`).join('\n')}`);
+        if (!choice) return;
+        const selected = rewards[Number(choice) - 1];
+        if (!selected) return A.setNotice(document.querySelector('[data-dashboard-notice]'), 'Choose a valid reward number.', 'error');
+        const res = await invoke('admin-secure', { action: 'insert', table: 'reward_redemptions', payload: { user_id: btn.dataset.reward, reward_id: selected.id, status: 'approved' } });
+        if (res) A.setNotice(document.querySelector('[data-dashboard-notice]'), `${selected.title} granted to the member.`, 'success');
       }));
     } catch (e) {
       console.error('Could not load member list:', e);

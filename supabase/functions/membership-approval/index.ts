@@ -5,6 +5,11 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+const COMMUNITY_INVITE_URL = Deno.env.get("WHATSAPP_COMMUNITY_INVITE_URL") || "";
+function communityInvite(fallback?: string | null): string | null {
+  const candidate = COMMUNITY_INVITE_URL.trim() || (fallback || "").trim();
+  try { const url = new URL(candidate); return url.protocol === "https:" && (url.hostname === "wa.me" || url.hostname.endsWith(".whatsapp.com") || url.hostname === "whatsapp.com") ? url.href : null; } catch { return null; }
+}
 
 function corsHeaders(req: Request): HeadersInit {
   const origin = req.headers.get("origin") || "";
@@ -138,12 +143,13 @@ Deno.serve(async (req) => {
     ? { user_id: membership.user_id, type: "approval", title: "Registration approved", body: `Your registration for batch "${batchName}" has been approved. Welcome to CCD!` }
     : { user_id: membership.user_id, type: "rejection", title: "Registration update", body: `Your registration for batch "${batchName}" was not approved. Contact the CCD team for more information.` };
   await admin.from("notifications").insert(notification);
-  if (action === "approve" && membership.batches?.whatsapp_invite_url) {
+  const inviteUrl = action === "approve" ? communityInvite(membership.batches?.whatsapp_invite_url) : null;
+  if (inviteUrl) {
     const { error } = await admin.from("notifications").insert({
       user_id: membership.user_id,
       type: "whatsapp",
       title: "Your batch WhatsApp group",
-      body: `Join your batch WhatsApp group: ${membership.batches.whatsapp_invite_url}`,
+      body: `Join the CCD community WhatsApp group: ${inviteUrl}`,
     });
     if (!error) await admin.from("memberships").update({ whatsapp_sent: true }).eq("id", membership.id);
   }

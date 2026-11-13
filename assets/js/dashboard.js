@@ -13,12 +13,16 @@
   window.CCD.user = user;
 
   async function loadOverview() {
-    const [profile, memberships, tasks, points, notifications] = await Promise.all([
+    const [profile, memberships, tasks, points, notifications, badges, leadership, teams, projects] = await Promise.all([
       sb.from('profiles').select('id,full_name,email,phone,country,city,avatar_url,bio,github_url,portfolio_url,linkedin_url,role,created_at,updated_at').eq('id', user.id).maybeSingle(),
       sb.from('memberships').select('*, batches(name,year,status,start_date,end_date)').eq('user_id', user.id).order('created_at', { ascending: false }),
       sb.from('tasks').select('id,title,status,due_date,points').or(`assigned_to.eq.${user.id}`).limit(20),
       sb.from('points').select('points').eq('user_id', user.id),
-      sb.from('notifications').select('id,type,title,body,read_at,created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(4)
+      sb.from('notifications').select('id,type,title,body,read_at,created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(4),
+      sb.from('achievements').select('title,badge_key').eq('user_id', user.id).order('awarded_at', { ascending: false }).limit(12),
+      sb.from('batch_leadership').select('position').eq('user_id', user.id).eq('active', true).limit(8),
+      sb.from('teams').select('name').eq('leader_id', user.id).limit(8),
+      sb.from('projects').select('title').eq('leader_id', user.id).limit(8)
     ]);
     const p = profile.data || {};
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v ?? ', '; };
@@ -28,6 +32,16 @@
     const active = (memberships.data || []).find(m => ['active','pending','verified'].includes(m.status)) || (memberships.data || [])[0];
     set('statBatch', active?.batches ? `${active.batches.name} ${active.batches.year}` : 'No batch');
     set('statCategory', active?.category || ', ');
+    const roleHost = document.getElementById('memberRoleBadges');
+    if (roleHost) {
+      const roles = [
+        ...(leadership.data || []).map(item => item.position),
+        ...(teams.data || []).map(item => `Team Lead Â· ${item.name}`),
+        ...(projects.data || []).map(item => `Project Lead Â· ${item.title}`),
+        ...(badges.data || []).map(item => item.title)
+      ].filter(Boolean);
+      roleHost.innerHTML = roles.length ? roles.map(role => `<span class="member-role-badge">${esc(role)}</span>`).join('') : '<span class="member-role-empty">Your community contributions and badges will appear here.</span>';
+    }
     const tbody = document.querySelector('#tasksTable tbody');
     if (tbody) {
       tbody.innerHTML = (tasks.data || []).slice(0, 8).map(t => `<tr><td>${esc(t.title)}</td><td><span class="status ${esc(t.status)}">${esc(t.status)}</span></td><td>${t.due_date || ', '}</td><td>${t.points ?? ''}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">No tasks assigned yet.</td></tr>';
@@ -81,7 +95,7 @@
         inviteHtml = '<span class="help">Your group link will be available after an administrator approves this application.</span>';
       }
       const studyInfo = membership.employment_status === 'student'
-        ? `${membership.institution_name || ''}${membership.institution_country ? `, ${membership.institution_country}` : ''}${membership.study_year ? ` · ${membership.study_year}` : ''}`
+        ? `${membership.institution_name || ''}${membership.institution_country ? `, ${membership.institution_country}` : ''}${membership.study_year ? ` \u00b7 ${membership.study_year}` : ''}`
         : membership.employment_status || '';
       return `<article class="membership-status-card"><div><strong>${esc(batchName)}</strong><span class="status ${esc(membership.status)}">${esc(membership.status)}</span><small>Category: ${esc(membership.category || 'Member')}</small>${studyInfo ? `<small>${esc(studyInfo)}</small>` : ''}</div><div>${inviteHtml}</div></article>`;
     }));
@@ -159,54 +173,51 @@
   }
 
   let institutionCatalogPromise;
-  let institutionCatalogBound = false;
-  async function loadInstitutionCatalog(form) {
-    const countryList = form.querySelector('#institutionCountries');
-    const schoolList = form.querySelector('#institutionNames');
+  function loadInstitutionCatalog(form) {
+    const typeSelect = form.elements.institution_type;
+    const schoolSelect = form.elements.institution_name;
+    const countrySelect = form.elements.institution_country;
     const status = form.querySelector('[data-institution-status]');
-    if (!countryList || !schoolList) return;
+    if (!typeSelect || !schoolSelect) return;
     if (!institutionCatalogPromise) {
+      const nigerianDirectory = [
+        ['university','University of Ibadan'],['university','Lead City University'],['university','KolaDaisi University'],['university','Dominican University, Ibadan'],['university','Precious Cornerstone University'],['university','Atiba University'],['university','First Technical University'],['university','Ajayi Crowther University'],['university','Bowen University'],['university','University of Lagos'],['university','Obafemi Awolowo University'],['university','University of Ilorin'],['university','University of Nigeria, Nsukka'],['university','Covenant University'],['university','Lagos State University'],['university','Federal University of Technology, Akure'],['university','University of Abuja'],['university','Ahmadu Bello University'],['university','Babcock University'],['university','Redeemers University'],['university','American University of Nigeria'],['university','University of Benin'],['university','University of Port Harcourt'],['university','Federal University of Technology, Minna'],['university','National Open University of Nigeria'],
+        ['polytechnic','The Polytechnic, Ibadan'],['polytechnic','Federal Polytechnic, Ede'],['polytechnic','Federal Polytechnic, Offa'],['polytechnic','Federal Polytechnic, Ilaro'],['polytechnic','Yaba College of Technology'],['polytechnic','Lagos State Polytechnic'],['polytechnic','Moshood Abiola Polytechnic'],['polytechnic','Federal Polytechnic, Ado-Ekiti'],['polytechnic','Rufus Giwa Polytechnic'],['polytechnic','Osun State Polytechnic, Iree'],['polytechnic','Oyo State College of Agriculture and Technology'],['polytechnic','Gateway ICT Polytechnic'],['polytechnic','Auchi Polytechnic'],['polytechnic','Federal Polytechnic, Nekede'],['polytechnic','Kaduna Polytechnic'],['polytechnic','Kwara State Polytechnic'],
+        ['college','Federal College of Education (Special), Oyo'],['college','Federal College of Education, Abeokuta'],['college','Emmanuel Alayande University of Education'],['college','Adeyemi Federal University of Education'],['college','Federal College of Education, Zaria'],['college','Federal College of Education, Osiele'],['college','Nigerian College of Aviation Technology'],['college','Oyo State College of Nursing and Midwifery'],['college','Lead City College of Health Sciences'],['college','Federal College of Agriculture, Moor Plantation'],['college','Federal College of Forestry, Ibadan'],['college','National Institute of Construction Technology']
+      ].map(([type,name]) => ({type,name,country:'Nigeria'}));
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 12_000);
-      institutionCatalogPromise = fetch('https://raw.githubusercontent.com/Hipo/university-domains-list/master/world_universities_and_domains.json', { signal: controller.signal })
-        .then(response => { if (!response.ok) throw new Error('Directory unavailable'); return response.json(); })
-        .then(rows => Array.isArray(rows) ? rows.filter(row => typeof row?.name === 'string' && typeof row?.country === 'string' && row.name && row.country) : [])
-        .catch(() => [])
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      institutionCatalogPromise = fetch('https://raw.githubusercontent.com/Hipo/university-domains-list/master/world_universities_and_domains.json',{signal:controller.signal})
+        .then(response => response.ok ? response.json() : [])
+        .then(rows => nigerianDirectory.concat((Array.isArray(rows)?rows:[]).filter(row => row?.country && row?.name).map(row => ({type:'university',name:row.name,country:row.country}))))
+        .catch(() => nigerianDirectory)
         .finally(() => clearTimeout(timeout));
     }
-    if (status) status.textContent = 'Loading the institution directory… You can always type your school manually.';
-    const institutions = await institutionCatalogPromise;
-    if (!institutions.length) {
-      if (status) status.textContent = 'Directory unavailable right now. Enter your institution and country manually.';
-      return;
-    }
-    if (institutionCatalogBound) return;
-    institutionCatalogBound = true;
-    countryList.replaceChildren(...Array.from(new Set(institutions.map(row => row.country.trim()).filter(Boolean))).sort().map(country => {
-      const option = document.createElement('option');
-      option.value = country;
-      return option;
-    }));
-    const schoolInput = form.elements.institution_name;
-    const countryInput = form.elements.institution_country;
-    const refreshSchools = () => {
-      const query = schoolInput.value.trim().toLowerCase();
-      const country = countryInput.value.trim().toLowerCase();
-      schoolList.replaceChildren();
-      if (query.length < 2) return;
-      institutions.filter(row => row.name.toLowerCase().includes(query) && (!country || row.country.toLowerCase().includes(country)))
-        .slice(0, 60).forEach(row => {
-          const option = document.createElement('option');
-          option.value = row.name;
-          option.label = row.country;
-          schoolList.appendChild(option);
-        });
-    };
-    schoolInput.addEventListener('input', refreshSchools);
-    countryInput.addEventListener('input', refreshSchools);
-    if (status) status.textContent = 'Search by name; filter by country if you like. If your school is missing, enter it manually.';
+    institutionCatalogPromise.then(institutions => {
+      const previousCountry = countrySelect?.value || 'Nigeria';
+      if (countrySelect) {
+        const countries = [...new Set(institutions.map(item => item.country).filter(Boolean))].sort((a,b) => a.localeCompare(b));
+        countrySelect.replaceChildren(new Option('Choose country',''));
+        countries.forEach(country => countrySelect.add(new Option(country,country)));
+        countrySelect.value = countries.includes(previousCountry) ? previousCountry : (countries.includes('Nigeria') ? 'Nigeria' : '');
+      }
+      const refresh = () => {
+        const type = typeSelect.value;
+        const country = countrySelect?.value || '';
+        schoolSelect.replaceChildren(new Option(type ? 'Choose a listed institution' : 'Choose institution type first',''));
+        schoolSelect.disabled = !type || !country;
+        if (!type || !country) return;
+        const rows = institutions.filter(item => item.type === type && item.country === country)
+          .sort((a,b) => a.name.localeCompare(b.name));
+        rows.forEach(item => schoolSelect.add(new Option(item.name,item.name)));
+        if (status) status.textContent = rows.length ? `${rows.length} listed ${type} options. The directory is curated for the Ibadan launch.` : 'No listed institution for this type is currently available.';
+      };
+      if (!typeSelect.dataset.catalogBound) { typeSelect.addEventListener('change', refresh); typeSelect.dataset.catalogBound='true'; }
+      if (countrySelect && !countrySelect.dataset.catalogBound) { countrySelect.addEventListener('change', refresh); countrySelect.dataset.catalogBound='true'; }
+      refresh();
+    });
+    if (status) status.textContent = 'Loading the approved institution directory...';
   }
-
   function setupStudentRegistration(form) {
     const statusSelect = form.elements.employment_status;
     const studentFields = form.querySelector('[data-student-fields]');
@@ -230,6 +241,22 @@
     const accepted = !!form.terms?.checked;
     if (!accepted) return CCD.setNotice(notice, 'You must accept the community rules and terms.', 'error');
     CCD.setNotice(notice, 'Submitting registration...', '');
+    const wa = document.getElementById('waResult');
+    const clearProgress = () => {
+      if (!wa) return;
+      wa.replaceChildren();
+      wa.classList.remove('registration-bus-loading', 'is-visible');
+    };
+    if (wa) {
+      wa.replaceChildren();
+      wa.classList.add('is-visible', 'registration-bus-loading');
+      const ride = document.createElement('div');
+      ride.className = 'ibadan-bus-ride';
+      ride.setAttribute('role', 'status');
+      ride.setAttribute('aria-live', 'polite');
+      ride.innerHTML = '<span class="ibadan-route">IBADAN &#8226; CCD COMMUNITY</span><span class="ibadan-bus" aria-hidden="true">&#128652;</span><span class="ibadan-road" aria-hidden="true"></span><strong>Getting your community welcome ready&#8230;</strong>';
+      wa.appendChild(ride);
+    }
     const { data: result, error } = await sb.rpc('register_batch_membership', {
       p_batch_id: batch_id,
       p_category: form.category.value,
@@ -247,32 +274,40 @@
       p_study_year: form.employment_status.value === 'student' ? form.study_year.value : null
     });
     if (error) {
+      clearProgress();
       const message = error.message || '';
       const lowerMessage = message.toLowerCase();
       const friendly = lowerMessage.includes('duplicate key') ? 'You are already registered for this batch.'
-        : lowerMessage.includes('whatsapp invite configured') ? 'This batch is not ready for registration yet. Please contact the CCD team.'
+        : lowerMessage.includes('whatsapp invite configured') ? 'Supabase is still using an older registration rule. Apply the updated supabase/auto_approve_memberships.sql script in the Supabase SQL Editor, then retry.'
         : lowerMessage.includes('registration is closed') ? 'Registration for this batch has closed.'
         : lowerMessage.includes('register_batch_membership') || lowerMessage.includes('permission denied for function')
-          ? 'Automatic registration is not set up yet. Please contact the CCD team.' : message;
+          ? 'The registration database function is missing or outdated. Apply supabase/auto_approve_memberships.sql in Supabase, then retry.' : message;
       return CCD.setNotice(notice, friendly, 'error');
     }
     if (result?.status === 'full') {
+      clearProgress();
       CCD.setNotice(notice, `This batch has reached its ${result.capacity}-member capacity.`, 'error');
       await loadBatches(form.batch_id);
       return;
     }
     const membershipId = result?.membership_id;
     if (!membershipId || result?.status !== 'active') {
+      clearProgress();
       return CCD.setNotice(notice, 'Registration could not be completed. Please try again or contact the CCD team.', 'error');
     }
     const { data: delivery, error: notificationError } = await sb.functions.invoke('registration-email', { body: { membership_id: membershipId } });
-    const inviteUrl = safeHttpsUrl(delivery?.whatsapp_invite_url || '');
+    if (wa) await new Promise(resolve => setTimeout(resolve, 1800));
+    let inviteUrl = safeHttpsUrl(delivery?.whatsapp_invite_url || '');
+    if (!inviteUrl) {
+      const { data: inviteResponse } = await sb.functions.invoke('membership', { body: { batch_id } });
+      inviteUrl = safeHttpsUrl(inviteResponse?.whatsapp_invite_url || '');
+    }
     CCD.setNotice(notice, notificationError
       ? 'You are approved. Your group invite is available on this page and in Notifications if delivery succeeds.'
       : 'You are approved and can join the batch WhatsApp group now.', notificationError ? 'error' : 'success');
-    const wa = document.getElementById('waResult');
     if (wa) {
       wa.replaceChildren();
+      wa.classList.remove('registration-bus-loading');
       wa.classList.add('is-visible');
       const message = document.createElement('p');
       message.textContent = notificationError ? 'Your registration is active. Open Notifications or try refreshing to retrieve the group invite.' : 'Your registration is active.';
@@ -298,7 +333,7 @@
     const pf = document.querySelector('[data-profile-form]');
     if (pf) pf.addEventListener('submit', e => { e.preventDefault(); saveProfile(pf); });
     const bf = document.querySelector('[data-membership-form]');
-    if (bf) { setupStudentRegistration(bf); loadBatches(bf.batch_id); bf.addEventListener('submit', e => { e.preventDefault(); submitMembership(bf); }); }
+    if (bf) { setupStudentRegistration(bf); loadBatches(bf.batch_id); bf.addEventListener('submit', e => { e.preventDefault(); submitMembership(bf).catch(error => { const wa = document.getElementById('waResult'); if (wa) { wa.replaceChildren(); wa.classList.remove('registration-bus-loading', 'is-visible'); } CCD.setNotice(bf.querySelector('[data-notice]'), error?.message || 'Registration could not be completed. Check your connection and try again.', 'error'); }); }); }
     loadMembershipState();
     const profileForm = document.querySelector('[data-profile-form]');
     const avatarInput = profileForm?.elements.avatar;

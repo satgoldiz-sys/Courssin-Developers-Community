@@ -5,6 +5,11 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+const COMMUNITY_INVITE_URL = Deno.env.get("WHATSAPP_COMMUNITY_INVITE_URL") || "";
+function communityInvite(fallback?: string | null): string | null {
+  const candidate = COMMUNITY_INVITE_URL.trim() || (fallback || "").trim();
+  try { const url = new URL(candidate); return url.protocol === "https:" && (url.hostname === "wa.me" || url.hostname.endsWith(".whatsapp.com") || url.hostname === "whatsapp.com") ? url.href : null; } catch { return null; }
+}
 
 function corsHeaders(req: Request): HeadersInit {
   const origin = req.headers.get("origin") || "";
@@ -129,7 +134,7 @@ Deno.serve(async (req) => {
     if (error) return respond(req, { error: "Admin notification could not be created" }, 500);
   }
 
-  const inviteUrl = approved ? membership.batches?.whatsapp_invite_url || null : null;
+  const inviteUrl = approved ? communityInvite(membership.batches?.whatsapp_invite_url) : null;
   if (inviteUrl) {
     const { error } = await admin.from("notifications").insert({
       user_id: user.id,
