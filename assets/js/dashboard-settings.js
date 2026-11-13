@@ -31,8 +31,10 @@
       try {
         const { error } = await sb.auth.updateUser({ password });
         if (error) throw error;
+        const { error: noticeError } = await sb.functions.invoke('auth-security-notice', { body: { action: 'password_changed' } });
+        if (noticeError) console.warn('Password changed, but the security email could not be requested.', noticeError.message);
         form.reset();
-        M.setNotice(notice, 'Password updated successfully.', 'success');
+        M.setNotice(notice, noticeError ? 'Password updated. The security email could not be sent; contact the CCD team if you need help.' : 'Password updated successfully. A security email has been sent.', noticeError ? 'error' : 'success');
       } catch (error) {
         M.setNotice(notice, error.message || 'Could not update your password. Please try again.', 'error');
       } finally {

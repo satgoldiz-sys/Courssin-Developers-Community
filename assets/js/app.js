@@ -113,7 +113,7 @@
               <a href="${base}contact.html">Contact</a>
               <span>${BRAND.tagline}</span>
             </span>
-              <span class="powered-by"><span class="powered-by-label">Brought to you by</span><span class="footer-credit-brand"><img src="${base}assets/images/courssin-tech-institute-logo.svg" alt="Courssin Tech Institute logo"><strong>Courssin Tech Institute</strong></span><span class="footer-credit-divider" aria-hidden="true">·</span><span class="footer-credit-brand"><img src="${base}assets/images/satgold-technol-logo.svg" alt="SatGold Technol logo"><strong>SatGold Technol</strong></span></span>
+              <span class="powered-by"><span class="powered-by-label">Brought to you by</span><a class="footer-credit-brand" href="https://www.courssin.com.ng/" target="_blank" rel="noopener noreferrer"><img src="${base}assets/images/courssin-tech-institute-logo.svg" alt="Courssin Tech Institute logo"><strong>Courssin Tech Institute</strong></a><span class="footer-credit-divider" aria-hidden="true">·</span><a class="footer-credit-brand" href="https://satgoldtechnol.name.ng/" target="_blank" rel="noopener noreferrer"><img src="${base}assets/images/satgold-technol-logo.svg" alt="SatGold Technol logo"><strong>SatGold Technol</strong></a></span>
           </div>
         </div>
       </footer>`;
@@ -262,9 +262,8 @@ function setActiveLinks() {
     const searchControl = document.createElement('div');
     searchControl.className = 'workspace-search-control';
     searchControl.innerHTML = '<button class="workspace-search-toggle" type="button" aria-label="Search dashboard pages" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg></button><input class="workspace-search-input" type="search" placeholder="Find a dashboard page" aria-label="Find a dashboard page" hidden>';
-    toolbar.after(searchControl);
+    topbar.querySelector('.workspace-topbar-actions').prepend(searchControl);
     const workspaceSearchInput = searchControl.querySelector('.workspace-search-input');
-    drawerHead.appendChild(workspaceSearchInput);
     const appMain = shell.querySelector('.app-main');
     const appHeader = appMain?.querySelector('.app-header');
     appMain?.insertBefore(topbar, appHeader || appMain.firstChild);

@@ -12,7 +12,12 @@
     const tbody = document.querySelector('#tasksTable tbody');
     if (!tbody) return;
     try {
-      const { data, error } = await sb.from('tasks').select('id,title,status,due_date,points,teams(name)').or(`assigned_to.eq.${user.id}`).order('due_date', { ascending: true }).limit(50);
+      const { data: membershipRows, error: membershipError } = await sb.from('team_members').select('team_id').eq('user_id', user.id);
+      if (membershipError) throw membershipError;
+      const teamIds = (membershipRows || []).map(row => row.team_id);
+      let query = sb.from('tasks').select('id,title,status,due_date,points,teams(name)').order('due_date', { ascending: true }).limit(50);
+      query = teamIds.length ? query.or(`assigned_to.eq.${user.id},team_id.in.(${teamIds.join(',')})`) : query.eq('assigned_to', user.id);
+      const { data, error } = await query;
       if (error) throw error;
       M.renderList(tbody, data, t => `
         <tr>

@@ -11,7 +11,7 @@
     const tbody = document.querySelector('#tasksTable tbody');
     if (!tbody) return;
     try {
-      const { data, error } = await sb.from('tasks').select('id,title,status,due_date,points,assigned_to,teams(name),profiles(full_name)').order('created_at', { ascending: false }).limit(100);
+      const { data, error } = await sb.from('tasks').select('id,title,status,due_date,points,assigned_to,teams(name),profiles!tasks_assigned_to_fkey(full_name)').order('created_at', { ascending: false }).limit(100);
       if (error) throw error;
       A.renderList(tbody, data, t => `
         <tr>

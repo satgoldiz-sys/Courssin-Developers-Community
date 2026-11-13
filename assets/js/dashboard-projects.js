@@ -12,8 +12,26 @@
     const tbody = document.querySelector('#projectsTable tbody');
     if (!tbody) return;
     try {
+      const [{ data: membershipRows, error: membershipError }, { data: teamRows, error: teamError }, { data: ledRows, error: ledError }] = await Promise.all([
+        sb.from('project_members').select('project_id').eq('user_id', user.id),
+        sb.from('team_members').select('team_id').eq('user_id', user.id),
+        sb.from('projects').select('id').eq('leader_id', user.id)
+      ]);
+      if (membershipError) throw membershipError;
+      if (teamError) throw teamError;
+      if (ledError) throw ledError;
+      const teamIds = (teamRows || []).map(row => row.team_id);
+      const [{ data: teamProjects, error: teamProjectsError }] = teamIds.length
+        ? await Promise.all([sb.from('projects').select('id').in('team_id', teamIds)])
+        : [{ data: [], error: null }];
+      if (teamProjectsError) throw teamProjectsError;
+      const projectIds = [...new Set([...(membershipRows || []).map(row => row.project_id), ...(ledRows || []).map(row => row.id), ...(teamProjects || []).map(row => row.id)])];
+      if (!projectIds.length) {
+        M.renderList(tbody, [], () => '', M.emptyState('No projects assigned yet.'));
+        return;
+      }
       const { data, error } = await sb.from('projects').select('id,title,status,deadline,github_url,live_url,teams(name),batches(name)')
-        .or(`team_id.in(select team_id from team_members where user_id = eq.${user.id})`).order('deadline', { ascending: true }).limit(50);
+        .in('id', projectIds).order('deadline', { ascending: true }).limit(50);
       if (error) throw error;
       M.renderList(tbody, data, p => {
         const links = [p.github_url ? `<a class="btn btn-secondary btn-sm" href="${M.esc(p.github_url)}" target="_blank" rel="noopener">Code</a>` : '', p.live_url ? `<a class="btn btn-primary btn-sm" href="${M.esc(p.live_url)}" target="_blank" rel="noopener">Live</a>` : ''];
@@ -27,7 +45,8 @@
           </tr>`;
       }, M.emptyState('No projects assigned yet.'));
     } catch (e) {
-      tbody.innerHTML = M.emptyState('Could not load projects. Check Supabase configuration and policies.');
+      console.error('Member projects could not be loaded', e);
+      tbody.innerHTML = M.emptyState(`Could not load projects: ${M.esc(e?.message || e?.details || 'Check Supabase policies and project assignments.')}`);
     }
   }
 

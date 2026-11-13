@@ -9,6 +9,8 @@
   try {
     const { data: { session }, error: sessionError } = await sb.auth.getSession();
     if (sessionError || !session) throw new Error('Your sign-in could not be completed. Please sign in again.');
+    const { error: securityNoticeError } = await sb.functions.invoke('auth-security-notice', { body: { action: 'sign_in' } });
+    if (securityNoticeError) console.warn('Sign-in succeeded, but device security notification could not be checked.', securityNoticeError.message);
     const { data: profile, error: profileError } = await sb.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
     if (profileError) throw new Error('Your account could not be verified right now. Please try again.');
     const isAdmin = ['super_admin', 'administrator'].includes(profile?.role);

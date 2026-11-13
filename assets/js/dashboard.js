@@ -16,13 +16,13 @@
     const [profile, memberships, tasks, points, notifications, badges, leadership, teams, projects] = await Promise.all([
       sb.from('profiles').select('id,full_name,email,phone,country,city,avatar_url,bio,github_url,portfolio_url,linkedin_url,role,created_at,updated_at').eq('id', user.id).maybeSingle(),
       sb.from('memberships').select('*, batches(name,year,status,start_date,end_date)').eq('user_id', user.id).order('created_at', { ascending: false }),
-      sb.from('tasks').select('id,title,status,due_date,points').or(`assigned_to.eq.${user.id}`).limit(20),
+      sb.from('tasks').select('id,title,status,due_date,points').eq('assigned_to', user.id).limit(20),
       sb.from('points').select('points').eq('user_id', user.id),
       sb.from('notifications').select('id,type,title,body,read_at,created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(4),
       sb.from('achievements').select('title,badge_key').eq('user_id', user.id).order('awarded_at', { ascending: false }).limit(12),
       sb.from('batch_leadership').select('position').eq('user_id', user.id).eq('active', true).limit(8),
-      sb.from('teams').select('name').eq('leader_id', user.id).limit(8),
-      sb.from('projects').select('title').eq('leader_id', user.id).limit(8)
+      sb.from('teams').select('name,team_members!inner(user_id)').eq('team_members.user_id', user.id).limit(8),
+      sb.from('projects').select('title,project_members!inner(user_id)').eq('project_members.user_id', user.id).limit(8)
     ]);
     const p = profile.data || {};
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v ?? ', '; };
