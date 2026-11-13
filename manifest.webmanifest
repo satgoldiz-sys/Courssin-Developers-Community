@@ -1,0 +1,14 @@
+{
+  "id": "/",
+  "name": "Courssin Developers Community",
+  "short_name": "CCD",
+  "description": "Courssin Developers Community — build, learn, innovate and grow.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4f8f5",
+  "theme_color": "#087c4b",
+  "icons": [
+    { "src": "/assets/images/ccd-logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

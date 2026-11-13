@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css">
-</head>
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/images/ccd-logo.svg" type="image/svg+xml"><meta name="theme-color" content="#087c4b"></head>
 <body data-base="">
   <div data-mount="header"></div>
   <main id="main">
@@ -39,6 +39,7 @@
               <label for="confirmPassword">Confirm password</label>
               <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" required placeholder="Confirm your password">
             </div>
+            <div class="field"><div class="legal-consent"><input id="acceptTerms" type="checkbox" name="acceptTerms" required><label for="acceptTerms">I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms and Conditions</a> and acknowledge the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</label></div></div>
             <p class="help">After creating your account, verify your email, then complete batch registration when admissions are open.</p>
             <button class="btn btn-primary btn-block" type="submit" style="margin-top:16px">Create account</button>
           </form>
