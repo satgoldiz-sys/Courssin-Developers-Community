@@ -506,11 +506,41 @@ function setActiveLinks() {
     setupTheme();
     mountEvents();
     setupReveal();
+    setupActivityTracking();
     decorateCCD(document.body);
     if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
       const base = document.body.dataset.base || '';
       navigator.serviceWorker.register(`${base}service-worker.js`, { scope: base || '/' }).catch(error => console.warn('CCD offline shell could not be registered', error));
     }
+  }
+
+  function setupActivityTracking() {
+    if (!window.CCD?.isConfigured?.() || document.body.dataset.requireAuth !== 'true') return;
+    const sb = window.CCD.getSupabase();
+    sb.auth.getSession().then(({ data }) => {
+      const userId = data?.session?.user?.id;
+      if (!userId) return;
+      const page = location.pathname.replace(/\/$/, '') || '/';
+      const last = new Map();
+      const record = async (eventType, label) => {
+        const key = `${eventType}:${label}`;
+        if (Date.now() - (last.get(key) || 0) < 2000) return;
+        last.set(key, Date.now());
+        const { error } = await sb.from('user_activity').insert({ user_id: userId, event_type: eventType, page_path: page.slice(0, 300), target_label: label.slice(0, 100) });
+        if (error) console.debug('Workspace activity was not recorded', error.code);
+      };
+      record('page_view', document.title || page);
+      document.addEventListener('click', event => {
+        const target = event.target.closest('a,button,[role="button"]');
+        if (!target || target.closest('[data-private],.no-activity-log')) return;
+        const label = (target.getAttribute('aria-label') || target.textContent || target.title || target.getAttribute('href') || 'Interaction').trim().replace(/\s+/g, ' ');
+        if (label) record(target.matches('a') ? 'navigation' : 'action', label);
+      }, { passive: true });
+      document.addEventListener('submit', event => {
+        const label = event.target.getAttribute('aria-label') || event.target.querySelector('button[type="submit"]')?.textContent || event.target.getAttribute('name') || 'Form submitted';
+        record('form_submit', `${document.title}: ${label.trim().replace(/\s+/g, ' ')}`);
+      }, true);
+    }).catch(error => console.debug('Workspace activity tracking unavailable', error));
   }
 
   document.addEventListener('DOMContentLoaded', mountLayout);

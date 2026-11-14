@@ -46,5 +46,5 @@
     return data;
   }
 
-  CCD.admin = { sb, requireSession, setNotice, renderList, statusClass, emptyState, invoke };
+  CCD.admin = { sb, requireSession, setNotice, renderList, statusClass, emptyState, invoke, esc };
 })();

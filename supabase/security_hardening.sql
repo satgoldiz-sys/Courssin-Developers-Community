@@ -183,7 +183,7 @@ create policy ccd_projects_select_guard on public.projects as restrictive for se
     select 1 from public.project_members pm where pm.project_id = projects.id and pm.user_id = auth.uid()
   ) or exists (
     select 1 from public.team_members tm where tm.team_id = projects.team_id and tm.user_id = auth.uid()
-  )));
+  ) or leader_id = auth.uid()));
 drop policy if exists ccd_project_members_select_guard on public.project_members;
 create policy ccd_project_members_select_guard on public.project_members as restrictive for select to authenticated
   using (auth.uid() = user_id or public.is_staff());

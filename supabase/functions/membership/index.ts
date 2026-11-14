@@ -1,11 +1,11 @@
-﻿import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 // Keep this function self-contained so it can be pasted into the Supabase Dashboard editor.
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-const COMMUNITY_INVITE_URL = Deno.env.get("WHATSAPP_COMMUNITY_INVITE_URL") || "";
+const COMMUNITY_INVITE_URL = "https://chat.whatsapp.com/HLFmAATDowQKFLjhamkoh2";
 function communityInvite(fallback?: string | null): string | null {
   const candidate = COMMUNITY_INVITE_URL.trim() || (fallback || "").trim();
   try { const url = new URL(candidate); return url.protocol === "https:" && (url.hostname === "wa.me" || url.hostname.endsWith(".whatsapp.com") || url.hostname === "whatsapp.com") ? url.href : null; } catch { return null; }

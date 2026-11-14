@@ -5,6 +5,15 @@
   const A = CCD.admin || {};
   const esc = CCD.esc || (s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])));
   async function count(table, filter) { let q = sb.from(table).select('*', { count: 'exact', head: true }); if (filter) q = filter(q); const { count } = await q; return count || 0; }
+  async function loadActivity() {
+    const tbody = document.querySelector('[data-activity-feed]'); if (!tbody) return;
+    const { data, error } = await sb.from('user_activity').select('id,user_id,event_type,page_path,target_label,created_at').order('created_at',{ascending:false}).limit(30);
+    if (error) { tbody.innerHTML = `<tr><td colspan="4" class="muted">Activity is unavailable. Apply the community engagement SQL migration.</td></tr>`; return; }
+    const ids = [...new Set((data||[]).map(row=>row.user_id))];
+    const { data: profiles } = ids.length ? await sb.from('profiles').select('id,full_name,email').in('id',ids) : {data:[]};
+    const names = new Map((profiles||[]).map(profile=>[profile.id,profile.full_name||profile.email||'CCD member']));
+    tbody.innerHTML = (data||[]).map(row=>`<tr><td>${esc(names.get(row.user_id)||'Member')}</td><td>${esc(row.target_label||row.event_type)}</td><td>${esc(row.page_path)}</td><td>${row.created_at?new Date(row.created_at).toLocaleString():''}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">No member activity recorded yet.</td></tr>';
+  }
   const set = (id,v)=>{const el=document.getElementById(id); if(el) el.textContent=v;};
   try {
     set('mMembers', await count('profiles'));
@@ -31,6 +40,7 @@
     if (!error) { form.reset(); loadBatches(); }
   }
   CCD.onReady(()=>{
+    loadActivity();
     loadBatches();
     const f=document.querySelector('[data-batch-form]'); if(f) f.addEventListener('submit',e=>{e.preventDefault();saveBatch(f);});
   });
