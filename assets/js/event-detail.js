@@ -80,6 +80,6 @@
   <a class="btn btn-secondary" href="events">Back to all events</a>`;
 
   function showMissing() {
-    root.innerHTML = '<div class="card event-not-found"><span class="chip">Event unavailable</span><h2>We couldnâ€™t find this event.</h2><p class="muted">It may be unpublished or the link may have expired.</p><a class="btn btn-primary" href="events">Browse events</a></div>';
+    root.innerHTML = '<div class="card event-not-found"><span class="chip">Event unavailable</span><h2>We couldn’t find this event.</h2><p class="muted">It may be unpublished or the link may have expired.</p><a class="btn btn-primary" href="events">Browse events</a></div>';
   }
 })();

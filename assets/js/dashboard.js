@@ -36,8 +36,8 @@
     if (roleHost) {
       const roles = [
         ...(leadership.data || []).map(item => item.position),
-        ...(teams.data || []).map(item => `Team Lead Â· ${item.name}`),
-        ...(projects.data || []).map(item => `Project Lead Â· ${item.title}`),
+        ...(teams.data || []).map(item => `Team Lead · ${item.name}`),
+        ...(projects.data || []).map(item => `Project Lead · ${item.title}`),
         ...(badges.data || []).map(item => item.title)
       ].filter(Boolean);
       roleHost.innerHTML = roles.length ? roles.map(role => `<span class="member-role-badge">${esc(role)}</span>`).join('') : '<span class="member-role-empty">Your community contributions and badges will appear here.</span>';

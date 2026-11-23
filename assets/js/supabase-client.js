@@ -6,7 +6,8 @@
     if (window.__ccdSupabase) return window.__ccdSupabase;
     if (!window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) return null;
     window.__ccdSupabase = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
-      auth: { storage: window.localStorage, persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+      auth: { storage: window.localStorage, persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+      global: window.CCD && window.CCD.safeFetch ? { fetch: window.CCD.safeFetch } : {}
     });
     return window.__ccdSupabase;
   }
