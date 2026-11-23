@@ -21,32 +21,35 @@
       if (teamError) throw teamError;
       if (ledError) throw ledError;
       const teamIds = (teamRows || []).map(row => row.team_id);
-      const [{ data: teamProjects, error: teamProjectsError }] = teamIds.length
-        ? await Promise.all([sb.from('projects').select('id').in('team_id', teamIds)])
-        : [{ data: [], error: null }];
-      if (teamProjectsError) throw teamProjectsError;
-      const projectIds = [...new Set([...(membershipRows || []).map(row => row.project_id), ...(ledRows || []).map(row => row.id), ...(teamProjects || []).map(row => row.id)])];
+      let teamProjects = [];
+      if (teamIds.length) {
+        const res = await sb.from('projects').select('id').in('team_id', teamIds);
+        if (res.error) throw res.error;
+        teamProjects = res.data || [];
+      }
+      const projectIds = [...new Set([...(membershipRows || []).map(row => row.project_id), ...(ledRows || []).map(row => row.id), ...teamProjects.map(row => row.id)])];
       if (!projectIds.length) {
         M.renderList(tbody, [], () => '', M.emptyState('No projects assigned yet.'));
         return;
       }
       const { data, error } = await sb.from('projects').select('id,title,status,deadline,github_url,live_url,teams(name),batches(name)')
-        .in('id', projectIds).order('deadline', { ascending: true }).limit(50);
+        .in('id', projectIds).order('deadline', { ascending: true, nullsFirst: false }).limit(50);
       if (error) throw error;
       M.renderList(tbody, data, p => {
-        const links = [p.github_url ? `<a class="btn btn-secondary btn-sm" href="${M.esc(p.github_url)}" target="_blank" rel="noopener">Code</a>` : '', p.live_url ? `<a class="btn btn-primary btn-sm" href="${M.esc(p.live_url)}" target="_blank" rel="noopener">Live</a>` : ''];
+        const code = M.safeHttpsUrl(p.github_url), live = M.safeHttpsUrl(p.live_url);
+        const links = [code ? `<a class="btn btn-secondary btn-sm" href="${M.esc(code)}" target="_blank" rel="noopener noreferrer">Code</a>` : '', live ? `<a class="btn btn-primary btn-sm" href="${M.esc(live)}" target="_blank" rel="noopener noreferrer">Live</a>` : ''].filter(Boolean);
         return `
           <tr>
             <td><strong>${M.esc(p.title)}</strong></td>
-            <td>${p.teams ? M.esc(p.teams.name) : ', '}</td>
-            <td><span class="status ${M.statusClass(p.status)}">${M.esc(p.status)}</span></td>
-            <td>${p.deadline || ', '}</td>
-            <td>${links.join(' ') || ', '}</td>
+            <td>${p.teams ? M.esc(p.teams.name) : 'N/A'}</td>
+            <td><span class="status ${M.statusClass(p.status)}">${M.esc(String(p.status || 'N/A').replace(/_/g, ' '))}</span></td>
+            <td>${M.esc(p.deadline || 'N/A')}</td>
+            <td>${links.join(' ') || 'N/A'}</td>
           </tr>`;
       }, M.emptyState('No projects assigned yet.'));
     } catch (e) {
       console.error('Member projects could not be loaded', e);
-      tbody.innerHTML = M.emptyState(`Could not load projects: ${M.esc(e?.message || e?.details || 'Check Supabase policies and project assignments.')}`);
+      M.showError(tbody, `Could not load projects. ${M.errorText(e)}`, load, 5);
     }
   }
 

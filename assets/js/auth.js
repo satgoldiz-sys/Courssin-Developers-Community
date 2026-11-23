@@ -72,14 +72,10 @@
       if (submitButton) submitButton.disabled = true;
       CCD.setNotice(notice, 'Signing in...', '');
 
-      // Server-side progressive lockout via Edge Function
+      // Prefer server-side progressive lockout via Edge Function
       try {
         const { data, error } = await sb.functions.invoke('login-lockout', { body: { email, password } });
-        if (error) {
-          CCD.setNotice(notice, await explainFunctionError(error), 'error');
-          return;
-        }
-        if (data && data.locked) {
+        if (!error && data && data.locked) {
           CCD.setNotice(notice, '', '');
           if (lockoutNotice) {
             lockoutNotice.textContent = `Account temporarily locked. Try again in ${data.lockout_remaining_minutes} minute(s).`;
@@ -87,14 +83,32 @@
           }
           return;
         }
-        if (data && data.access_token) {
-          // Persist session returned by the Edge Function
+        if (!error && data && data.access_token) {
           const { error: setErr } = await sb.auth.setSession({
             access_token: data.access_token,
             refresh_token: data.refresh_token
           });
           if (setErr) CCD.setNotice(notice, setErr.message, 'error');
           else await finishLogin(sb, data.user?.id, adminPortal, notice);
+          return;
+        }
+        if (!error && data && data.error) {
+          CCD.setNotice(notice, data.error, 'error');
+          return;
+        }
+        if (error) {
+          const status = error?.context?.status || 0;
+          const msg = error?.message || '';
+          const canFallback = status === 404 || (!status && /failed to send a request|failed to fetch|network/i.test(msg));
+          if (!canFallback) {
+            CCD.setNotice(notice, await explainFunctionError(error), 'error');
+            return;
+          }
+          // Fallback to direct Supabase auth when lockout function is unavailable
+          const { data: direct, error: directErr } = await sb.auth.signInWithPassword({ email, password });
+          if (directErr) { CCD.setNotice(notice, directErr.message, 'error'); return; }
+          if (direct?.session?.user?.id) { await finishLogin(sb, direct.session.user.id, adminPortal, notice); return; }
+          CCD.setNotice(notice, 'Sign-in failed. Please try again.', 'error');
           return;
         }
         CCD.setNotice(notice, 'The sign-in service returned an unexpected response. Please try again.', 'error');

@@ -6,8 +6,8 @@
   <meta name="description" content="Publish CCD events and manage organizers, batch positions, and volunteer opportunities.">
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/styles.css">
-<link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../assets/images/ccd-logo.svg" type="image/svg+xml"><meta name="theme-color" content="#087c4b"></head>
+  <link rel="stylesheet" href="../assets/css/styles.css"><link rel="stylesheet" href="../assets/css/workspace.css">
+<link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../assets/images/ccd-logo.svg" type="image/svg+xml"><meta name="theme-color" content="#087c4b"><link rel="apple-touch-icon" href="../assets/images/icons/icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="CCD"><meta name="mobile-web-app-capable" content="yes"></head>
 <body data-base="../" data-require-auth="true" data-require-admin="true">
   <div data-mount="header"></div>
   <main id="main" class="app-shell"><div class="app-layout">
@@ -30,7 +30,7 @@
         <div class="toolbar"><button class="btn btn-primary" type="submit">Save event</button><button class="btn btn-secondary" type="button" data-event-reset>Clear form</button></div>
       </form>
       <h2>Events</h2>
-      <div class="table-card"><div class="table-wrap"><table><thead><tr><th>Event</th><th>Date</th><th>Status</th><th>Manage</th></tr></thead><tbody data-events-table><tr><td colspan="4" class="muted">Loading eventsÃ¢â‚¬Â¦</td></tr></tbody></table></div></div>
+      <div class="table-card"><div class="table-wrap"><table><thead><tr><th>Event</th><th>Date</th><th>Status</th><th>Manage</th></tr></thead><tbody data-events-table><tr><td colspan="4" class="muted">Loading events…</td></tr></tbody></table></div></div>
       <section data-event-people hidden>
         <div class="app-header"><div><span class="chip">Event team</span><h2 data-selected-event-title>Organizers & volunteers</h2></div></div>
         <div class="grid-2">
@@ -40,8 +40,8 @@
             <div class="field"><label for="organizer-name">Organizer name</label><input id="organizer-name" name="full_name" maxlength="160" required></div>
             <div class="field"><label for="organizer-image">Organizer image</label><input id="organizer-image" name="image" type="file" accept="image/jpeg,image/png,image/webp"></div>
             <div class="field"><label for="organizer-batch">Current batch</label><select id="organizer-batch" name="batch_id"><option value="">Select batch</option></select></div>
-            <div class="field"><label for="organizer-batch-position">Position held in this batch</label><input id="organizer-batch-position" name="batch_position" maxlength="120" placeholder="Batch lead, team leaderÃ¢â‚¬Â¦" required></div>
-            <div class="field"><label for="organizer-volunteer-position">Event volunteer position</label><input id="organizer-volunteer-position" name="volunteer_position" maxlength="120" placeholder="Event coordinator, hostÃ¢â‚¬Â¦"></div>
+            <div class="field"><label for="organizer-batch-position">Position held in this batch</label><input id="organizer-batch-position" name="batch_position" maxlength="120" placeholder="Batch lead, team leader…" required></div>
+            <div class="field"><label for="organizer-volunteer-position">Event volunteer position</label><input id="organizer-volunteer-position" name="volunteer_position" maxlength="120" placeholder="Event coordinator, host…"></div>
             <div class="toolbar"><button class="btn btn-primary" type="submit">Save organizer</button><button class="btn btn-secondary" type="button" data-organizer-reset>Clear</button></div>
           </form>
           <form class="form-card" data-volunteer-form>
@@ -60,6 +60,6 @@
   </div></main>
   <div data-mount="footer"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="../assets/js/config.js"></script><script src="../assets/js/supabase-client.js"></script><script src="../assets/js/clean-links.js"></script><script src="../assets/js/guard.js"></script><script src="../assets/js/admin-modules.js"></script><script src="../assets/js/admin-media.js"></script><script src="../assets/js/admin-events.js"></script><script src="../assets/js/app.js"></script>
+  <script src="../assets/js/config.js"></script><script src="../assets/js/security.js"></script><script src="../assets/js/supabase-client.js"></script><script src="../assets/js/clean-links.js"></script><script src="../assets/js/guard.js"></script><script src="../assets/js/admin-modules.js"></script><script src="../assets/js/admin-media.js"></script><script src="../assets/js/admin-events.js"></script><script src="../assets/js/pwa.js"></script><script src="../assets/js/app.js"></script>
 </body>
 </html>

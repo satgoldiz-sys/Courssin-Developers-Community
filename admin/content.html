@@ -6,8 +6,8 @@
   <meta name="description" content="Publish CCD articles and manage the community media library.">
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/styles.css">
-<link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../assets/images/ccd-logo.svg" type="image/svg+xml"><meta name="theme-color" content="#087c4b"></head>
+  <link rel="stylesheet" href="../assets/css/styles.css"><link rel="stylesheet" href="../assets/css/workspace.css">
+<link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../assets/images/ccd-logo.svg" type="image/svg+xml"><meta name="theme-color" content="#087c4b"><link rel="apple-touch-icon" href="../assets/images/icons/icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="CCD"><meta name="mobile-web-app-capable" content="yes"></head>
 <body data-base="../" data-require-auth="true" data-require-admin="true">
   <div data-mount="header"></div>
   <main id="main" class="app-shell"><div class="app-layout">
@@ -29,7 +29,7 @@
         <div class="toolbar"><button class="btn btn-primary" type="submit">Save article</button><button class="btn btn-secondary" type="button" data-article-reset>Clear form</button></div>
       </form>
       <h2>Articles</h2>
-      <div class="table-card"><div class="table-wrap"><table><thead><tr><th>Article</th><th>Status</th><th>Published</th><th>Manage</th></tr></thead><tbody data-articles-table><tr><td colspan="4" class="muted">Loading articlesÃ¢â‚¬Â¦</td></tr></tbody></table></div></div>
+      <div class="table-card"><div class="table-wrap"><table><thead><tr><th>Article</th><th>Status</th><th>Published</th><th>Manage</th></tr></thead><tbody data-articles-table><tr><td colspan="4" class="muted">Loading articles…</td></tr></tbody></table></div></div>
       <form class="form-card" data-media-form>
         <h2>Add media to the library</h2>
         <div class="form-grid">
@@ -42,11 +42,11 @@
         <button class="btn btn-primary" type="submit">Upload media</button>
       </form>
       <h2>Media library</h2>
-      <div class="table-card"><div class="table-wrap"><table><thead><tr><th>Title</th><th>Type</th><th>Status</th><th>Manage</th></tr></thead><tbody data-media-table><tr><td colspan="4" class="muted">Loading mediaÃ¢â‚¬Â¦</td></tr></tbody></table></div></div>
+      <div class="table-card"><div class="table-wrap"><table><thead><tr><th>Title</th><th>Type</th><th>Status</th><th>Manage</th></tr></thead><tbody data-media-table><tr><td colspan="4" class="muted">Loading media…</td></tr></tbody></table></div></div>
     </div>
   </div></main>
   <div data-mount="footer"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="../assets/js/config.js"></script><script src="../assets/js/supabase-client.js"></script><script src="../assets/js/clean-links.js"></script><script src="../assets/js/guard.js"></script><script src="../assets/js/admin-modules.js"></script><script src="../assets/js/admin-media.js"></script><script src="../assets/js/admin-content.js"></script><script src="../assets/js/app.js"></script>
+  <script src="../assets/js/config.js"></script><script src="../assets/js/security.js"></script><script src="../assets/js/supabase-client.js"></script><script src="../assets/js/clean-links.js"></script><script src="../assets/js/guard.js"></script><script src="../assets/js/admin-modules.js"></script><script src="../assets/js/admin-media.js"></script><script src="../assets/js/admin-content.js"></script><script src="../assets/js/pwa.js"></script><script src="../assets/js/app.js"></script>
 </body>
 </html>

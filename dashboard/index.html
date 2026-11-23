@@ -1,7 +1,8 @@
 ﻿<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dashboard | CCD</title>
+<meta name="description" content="Your CCD member dashboard: tasks, projects, team, XP and notifications.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/styles.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../assets/images/ccd-logo.svg" type="image/svg+xml"><meta name="theme-color" content="#087c4b"></head>
+<link rel="stylesheet" href="../assets/css/styles.css"><link rel="stylesheet" href="../assets/css/workspace.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../assets/images/ccd-logo.svg" type="image/svg+xml"><meta name="theme-color" content="#087c4b"><link rel="apple-touch-icon" href="../assets/images/icons/icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="CCD"><meta name="mobile-web-app-capable" content="yes"></head>
 <body data-base="../" data-require-auth="true">
 <div data-mount="header"></div>
 <main id="main" class="app-shell"><div class="app-layout">
@@ -21,20 +22,27 @@
   <a href="#" data-signout>Sign out</a>
 </nav>
 <div class="app-main">
-  <div class="app-header"><div><span class="chip chip-accent">Ibadan launch Â· Member Dashboard</span><h1>Welcome, <span id="welcomeName">Member</span></h1><p class="muted">Your batch, tasks, projects, achievements, and notifications.</p><div class="member-role-badges" id="memberRoleBadges" aria-label="Community roles and badges"></div></div><a class="btn btn-primary" href="membership">Register for a batch</a></div>
+  <div class="app-header"><div><h1>Dashboard</h1><p class="muted">Welcome back, <span id="welcomeName">Member</span>. Plan, prioritize, and accomplish your tasks with ease.</p><div class="member-role-badges" id="memberRoleBadges" aria-label="Community roles and badges"></div></div><div class="ws-actions-row ws-head-actions"><a class="btn btn-primary" href="membership">Register for a batch</a><a class="btn btn-secondary" href="tasks">My tasks</a></div></div>
   <div class="notice" data-dashboard-notice></div>
-  <div class="stat-grid">
-    <a class="dashboard-stat-link" href="membership"><div class="stat-card"><div class="label">Current batch</div><div class="value" id="statBatch" style="font-size:1.2rem">, </div><span class="dashboard-card-hint">View membership</span></div></a>
-    <a class="dashboard-stat-link" href="membership"><div class="stat-card"><div class="label">Membership category</div><div class="value" id="statCategory" style="font-size:1.2rem">, </div><span class="dashboard-card-hint">Manage application</span></div></a>
-    <a class="dashboard-stat-link" href="tasks"><div class="stat-card"><div class="label">Tasks</div><div class="value" id="statTasks">, </div><span class="dashboard-card-hint">Open my tasks</span></div></a>
-    <a class="dashboard-stat-link" href="rewards"><div class="stat-card"><div class="label">Points</div><div class="value" id="statPoints">, </div><span class="dashboard-card-hint">Explore rewards</span></div></a>
-  </div>
-  <div class="dashboard-overview-grid">
-    <section class="dashboard-overview-card"><div class="section-heading"><div><span class="chip chip-accent">Updates</span><h2>Notifications</h2><p class="muted">Your latest community activity.</p></div><a class="btn btn-secondary btn-sm" href="notifications">View all</a></div><div class="notification-preview-list" data-notification-preview><p class="muted">Loading notificationsâ€¦</p></div></section>
-    <section class="dashboard-overview-card dashboard-tasks-preview"><div class="section-heading"><div><span class="chip">In progress</span><h2>My tasks</h2><p class="muted">Upcoming work from your team.</p></div><a class="btn btn-secondary btn-sm" href="tasks">View all</a></div><div class="table-card"><div class="table-wrap"><table id="tasksTable"><thead><tr><th>Task</th><th>Status</th><th>Due</th><th>Points</th></tr></thead><tbody><tr><td colspan="4" class="muted">Loading...</td></tr></tbody></table></div></div></section>
-  </div>
-</div></div></main>
-<div data-mount="footer"></div>
+  <section class="ov-stats" aria-label="Summary">
+    <a class="ov-stat is-hero" href="tasks"><div class="ov-stat-top"><span class="ov-stat-label">Total Tasks</span><span class="ov-stat-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></div><div class="ov-stat-value" id="ovTotal">0</div><div class="ov-stat-note"><i>All</i> Assigned to you or your team</div></a>
+    <a class="ov-stat" href="tasks"><div class="ov-stat-top"><span class="ov-stat-label">Completed Tasks</span><span class="ov-stat-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></div><div class="ov-stat-value" id="ovDone">0</div><div class="ov-stat-note"><i>Done</i> Finished and reviewed</div></a>
+    <a class="ov-stat" href="tasks"><div class="ov-stat-top"><span class="ov-stat-label">In Progress</span><span class="ov-stat-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></div><div class="ov-stat-value" id="ovActive">0</div><div class="ov-stat-note"><i>Live</i> Working or submitted</div></a>
+    <a class="ov-stat" href="rewards"><div class="ov-stat-top"><span class="ov-stat-label">Bonus XP &amp; Points</span><span class="ov-stat-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></div><div class="ov-stat-value" id="statPoints">0</div><div class="ov-stat-note"><i>XP</i> View rewards</div></a>
+  </section>
+  <section class="ov-grid">
+    <article class="ov-card ov-span-2"><div class="ov-card-head"><h2>Task Analytics</h2><span class="ov-legend"><span>Tasks due this week</span></span></div><div class="ov-bars-wrap"><div class="ov-bars" data-week-bars></div></div></article>
+    <article class="ov-card"><h2>Reminders</h2><div class="ov-reminder"><div class="ov-reminder-title" id="ovRemTitle">Loading...</div><div class="ov-reminder-meta" id="ovRemMeta"></div></div><a class="ov-big-btn" id="ovRemBtn" href="tasks"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>Open tasks</a></article>
+    <article class="ov-card"><div class="ov-card-head"><h2>Projects</h2><a class="ov-pill-btn" href="projects">View all</a></div><ul class="ov-list" id="ovProjects"><li class="ov-empty">Loading...</li></ul></article>
+    <article class="ov-card ov-span-2"><div class="ov-card-head"><h2>Team Collaboration</h2><a class="ov-pill-btn" href="team">My team</a></div><div class="ov-people" id="ovPeople"><p class="ov-empty">Loading...</p></div></article>
+    <section class="ov-card" aria-label="Task Progress"><h3>Task Progress</h3><div class="ov-gauge" data-gauge></div><div class="ov-legend"><span><i class="ov-dot-a"></i>Completed</span><span><i class="ov-dot-b"></i>In Progress</span><span><i class="ov-dot-c"></i>Pending</span></div></section>
+    <section class="ov-card ov-timer" aria-label="Focus timer"><h3>Focus Timer</h3><div class="ov-timer-time" data-timer-display>00:00:00</div><div class="ov-timer-controls"><button class="ov-round is-light" type="button" data-timer-toggle aria-label="Start timer"></button><button class="ov-round is-stop" type="button" data-timer-stop aria-label="Stop and reset timer"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button></div><small data-timer-note>Ready when you are</small></section>
+  </section>
+  <section class="ov-two">
+    <article class="ov-section dashboard-overview-card"><div class="section-heading"><div><h2>Notifications</h2><p class="muted">Your latest community activity.</p></div><a class="ov-pill-btn" href="notifications">View all</a></div><div class="notification-preview-list" data-notification-preview><p class="muted">Loading notifications...</p></div></article>
+    <article class="ov-section dashboard-overview-card"><div class="section-heading"><div><h2>Membership</h2><p class="muted">Your batch and category.</p></div><a class="ov-pill-btn" href="membership">Manage</a></div><ul class="ov-list"><li><span class="ov-ico">B</span><span class="ov-list-copy"><strong id="statBatch">None</strong><small>Current batch</small></span></li><li><span class="ov-ico">C</span><span class="ov-list-copy"><strong id="statCategory">None</strong><small>Membership category</small></span></li></ul></article>
+  </section>
+</div></div></main><div data-mount="footer"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="../assets/js/config.js"></script><script src="../assets/js/supabase-client.js"></script><script src="../assets/js/clean-links.js"></script><script src="../assets/js/guard.js"></script><script src="../assets/js/dashboard.js"></script><script src="../assets/js/app.js"></script>
+<script src="../assets/js/config.js"></script><script src="../assets/js/security.js"></script><script src="../assets/js/supabase-client.js"></script><script src="../assets/js/clean-links.js"></script><script src="../assets/js/guard.js"></script><script src="../assets/js/workspace-ui.js"></script><script src="../assets/js/dashboard.js"></script><script src="../assets/js/overview-member.js"></script><script src="../assets/js/pwa.js"></script><script src="../assets/js/app.js"></script>
 </body></html>

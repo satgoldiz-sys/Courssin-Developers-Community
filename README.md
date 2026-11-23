@@ -60,3 +60,16 @@ Premium, responsive, GDG-inspired (layout patterns) technology community platfor
 
 ## Status
 Core UI, premium auth screens with Google icon/OAuth flow, dashboard/admin shells, data hooks, schema/policies, and Edge Function templates are implemented. To make every module fully operational, configure Supabase/Resend/Google OAuth, apply SQL, deploy functions, and extend module-specific CRUD as needed. A full multi-role production platform also requires testing, moderation workflows, and operational admin setup.
+
+## Update notes (dashboard redesign, security, install app)
+
+Run these in the Supabase SQL Editor, in this order:
+1. supabase/fix_dashboard_tools.sql (fixes the Notifications error, adds discussion replies, task submissions access)
+2. supabase/rate_limit_hardening.sql (server side rate limits on inserts)
+Then redeploy the Edge Functions in supabase/functions (they now rate limit requests).
+
+Dashboards use assets/css/workspace.css, assets/js/workspace-ui.js, overview-member.js and overview-admin.js.
+Security headers and the Content Security Policy are in vercel.json. Client throttling is in assets/js/security.js.
+The install app popup, service worker registration and offline page are handled by assets/js/pwa.js, service-worker.js and offline.html.
+Never deploy the .env file. It holds server secrets; rotate the keys if the zip was shared.
+In Supabase Auth settings, also turn on CAPTCHA, leaked password protection and email rate limits.
